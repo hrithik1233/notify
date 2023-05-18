@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="35dp"
+    android:background="@color/white">
+
+
+
+   <LinearLayout
+       android:layout_height="match_parent"
+       android:layout_width="match_parent"
+       android:orientation="vertical"
+       >
+
+       <LinearLayout
+           android:layout_height="50dp"
+           android:background="@color/purple_700"
+           android:layout_width="match_parent"
+           >
+           <ImageView
+               android:id="@+id/back"
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:src="@drawable/_arrow_back_24"
+               android:layout_marginLeft="10dp"
+               android:layout_gravity="center"
+               />
+           <TextView
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+              android:layout_gravity="center"
+               android:layout_marginLeft="10dp"
+               android:text="Batch:"
+               android:id="@+id/bt"
+               android:textColor="@color/white"
+               android:textStyle="bold"
+               />
+           <TextView
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:layout_gravity="center"
+               android:id="@+id/batch_top"
+              android:layout_alignEnd="@id/bt"
+               android:layout_marginLeft="10dp"
+               android:text="BATCH:"
+               android:textColor="@color/white"
+               android:textStyle="bold"
+               />
+           <TextView
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:layout_gravity="center"
+               android:layout_marginLeft="10dp"
+               android:text="Year:"
+
+               android:textColor="@color/white"
+               android:textStyle="bold"
+               />
+           <TextView
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:layout_gravity="center"
+               android:id="@+id/year_top"
+               android:layout_alignEnd="@id/bt"
+               android:layout_marginLeft="10dp"
+               android:text="year"
+               android:textColor="@color/white"
+               android:textStyle="bold"
+               />
+       </LinearLayout>
+       <LinearLayout
+           android:orientation="horizontal"
+           android:layout_height="80dp"
+           android:background="#C1B8D5"
+           android:padding="5dp"
+           android:layout_width="match_parent"
+           >
+           <TextView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:textColor="@color/black"
+               android:textSize="15sp"
+               android:layout_gravity="center"
+               android:id="@+id/numberofstudents"
+               android:text="Number of students:0"
+
+               />
+
+
+           <View
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+
+               />
+           <com.google.android.material.floatingactionbutton.FloatingActionButton
+               android:id="@+id/floatingActionButtonedit"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center_vertical"
+               android:layout_centerVertical="true"
+
+               android:layout_marginStart="5dp"
+               android:layout_marginTop="5dp"
+               android:layout_marginEnd="5dp"
+               android:layout_marginRight="10dp"
+               android:layout_marginBottom="5dp"
+               android:clickable="true"
+               app:srcCompat="@drawable/baseline_edit_24" />
+           <com.google.android.material.floatingactionbutton.FloatingActionButton
+               android:id="@+id/floatingActionButtonsend"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_alignParentEnd="true"
+               android:layout_centerVertical="true"
+               android:layout_gravity="center_vertical"
+               android:layout_marginStart="5dp"
+               android:layout_marginTop="5dp"
+               android:layout_marginEnd="5dp"
+               android:layout_marginRight="10dp"
+               android:layout_marginBottom="5dp"
+               android:clickable="true"
+               app:srcCompat="@drawable/baseline_message_24" />
+           <com.google.android.material.floatingactionbutton.FloatingActionButton
+               android:id="@+id/floatingActionButtonadd"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_alignParentEnd="true"
+               android:layout_centerVertical="true"
+              android:layout_gravity="center_vertical"
+               android:layout_marginStart="5dp"
+               android:layout_marginTop="5dp"
+               android:layout_marginEnd="5dp"
+               android:layout_marginRight="10dp"
+               android:layout_marginBottom="5dp"
+               android:clickable="true"
+               app:srcCompat="@drawable/_add_24" />
+
+       </LinearLayout>
+
+
+
+       <androidx.recyclerview.widget.RecyclerView
+           android:layout_width="match_parent"
+   android:id="@+id/recyclerView"
+           android:layout_height="match_parent" />
+   </LinearLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

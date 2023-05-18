@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    app:cardElevation="20dp"
+ android:padding="2px"
+    app:cardCornerRadius="10dp"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:paddingBottom="0dp"
+        android:background="@color/trans"
+        app:cardCornerRadius="5dp"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="5dp"
+
+            android:fontFamily="sans-serif-medium"
+            android:text="CREATE BATCH"
+            android:textSize="15sp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:orientation="horizontal"
+            android:rowCount="1"
+
+            android:columnCount="2"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Batch Name:"
+                android:textColor="@color/material_dynamic_neutral_variant0"
+                />
+
+            <EditText
+                android:id="@+id/batchname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:ems="10"
+                android:textColor="@color/black"
+                android:textColorHint="@color/lightDark"
+                android:inputType="textPersonName"
+                android:hint=" Batch Name..." />
+        </GridLayout>
+
+        <GridLayout
+            android:orientation="horizontal"
+            android:rowCount="1"
+            android:layout_marginTop="10dp"
+            android:columnCount="2"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Year :             "
+                android:textColor="@color/material_dynamic_neutral_variant0"
+                />
+
+            <EditText
+                android:id="@+id/batchyear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:ems="10"
+                android:maxLength="4"
+                android:hint=" Batch year..."
+                android:inputType="number"
+                android:textColorHint="@color/lightDark"
+                android:textColor="@color/material_dynamic_tertiary0" />
+
+
+        </GridLayout>
+
+        <GridLayout
+            android:layout_gravity="fill"
+            android:orientation="horizontal"
+            android:rowCount="1"
+            android:layout_marginTop="30dp"
+            android:columnCount="2"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_marginRight="1px"
+                android:id="@+id/cancel"
+                android:layout_columnWeight="1"
+                android:backgroundTint="#ffffff"
+                android:text="Cancel"
+                android:textColor="#353434"
+                android:layout_height="40dp"
+                />
+            <Button
+                android:layout_marginLeft="1px"
+                android:id="@+id/create"
+                android:layout_columnWeight="1"
+                android:layout_height="40dp"
+                android:text="Create"
+                android:textColor="#353434"
+                android:backgroundTint="#ffffff"
+                />
+        </GridLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

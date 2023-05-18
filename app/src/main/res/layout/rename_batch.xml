@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:elevation="10dp"
+    app:cardCornerRadius="10dp"
+
+    android:background="@color/white"
+    android:layout_height="200dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="6dp"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="match_parent" >
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="RENAME"
+        android:textColor="@color/black"
+    android:layout_gravity="center"
+        android:textSize="15sp"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="50dp">
+        <TextView
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:text="Name   "
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:textSize="15sp"
+            />
+
+        <EditText
+            android:id="@+id/namerename"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Enter new name"
+            android:textColor="@color/black"
+            android:textColorHint="@color/lightDark"
+
+            android:textSize="15sp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_height="50dp">
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Year      "
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:textSize="15sp"
+            />
+        <EditText
+            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:hint="Enter new Year"
+            android:textColorHint="@color/lightDark"
+            android:maxLength="4"
+            android:id="@+id/yearrename"
+            android:textColor="@color/black"
+            android:inputType="number"
+            android:textSize="15sp"
+            />
+
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="50dp">
+
+            <Button
+                android:layout_height="match_parent"
+                android:layout_width="150dp"
+                android:text="Cancel"
+
+                android:id="@+id/cancelraname"
+
+                android:textColor="@color/black"
+                android:backgroundTint="@color/white"
+                android:textSize="15sp"
+
+                />
+            <Button
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:text="ok"
+                 android:backgroundTint="@color/white"
+                android:id="@+id/okrename"
+
+                android:textColor="@color/black"
+
+                android:textSize="15sp"
+                />
+
+    </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
