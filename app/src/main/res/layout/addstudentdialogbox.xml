@@ -43,9 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:columnCount="2"
-        android:orientation="horizontal"
-
-        >
+        android:orientation="horizontal">
         <TextView
 
             android:layout_height="wrap_content"
@@ -61,8 +59,7 @@
             android:textColor="#000000"
             android:textSize="12sp"
             android:layout_marginBottom="5dp"
-            android:layout_width="match_parent"
-            />
+            android:layout_width="match_parent" />
     </GridLayout>
     <GridLayout
         android:layout_height="wrap_content"
@@ -71,12 +68,10 @@
 
         >
         <TextView
-            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_width="150dp"
             android:text="Age of student: "
-            android:textColor="#000000"
-            />
+            android:textColor="#000000" />
         <EditText
             android:textColorHint="@color/hintcolour"
             android:layout_height="wrap_content"
@@ -89,7 +84,7 @@
             android:layout_weight="1"
             android:textColor="#000000"
             android:layout_width="match_parent"
-            />
+            android:autofillHints="" />
     </GridLayout>
 
 
@@ -97,7 +92,6 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="horizontal"
-
         >
         <TextView
             android:layout_weight="1"

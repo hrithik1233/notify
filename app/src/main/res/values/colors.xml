@@ -13,5 +13,7 @@
     <color name="hintcolour">#B4B1AF</color>
     <color name="SELECTED">#F5C241</color>
     <color name="NOT_SELECTED_DEFAULT">#CFC0F3</color>
+    <color name="gray_light">#9E9A9A</color>
+
 
 </resources>

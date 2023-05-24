@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="35dp"
+    android:layout_marginTop="12dp"
     android:background="@color/white">
 
 
@@ -25,14 +25,14 @@
                android:layout_height="wrap_content"
                android:layout_width="wrap_content"
                android:src="@drawable/_arrow_back_24"
-               android:layout_marginLeft="10dp"
+               android:layout_marginLeft="5dp"
                android:layout_gravity="center"
                />
            <TextView
                android:layout_height="wrap_content"
                android:layout_width="wrap_content"
               android:layout_gravity="center"
-               android:layout_marginLeft="10dp"
+               android:layout_marginLeft="3dp"
                android:text="Batch:"
                android:id="@+id/bt"
                android:textColor="@color/white"
@@ -44,7 +44,7 @@
                android:layout_gravity="center"
                android:id="@+id/batch_top"
               android:layout_alignEnd="@id/bt"
-               android:layout_marginLeft="10dp"
+               android:layout_marginLeft="3dp"
                android:text="BATCH:"
                android:textColor="@color/white"
                android:textStyle="bold"
@@ -53,9 +53,8 @@
                android:layout_height="wrap_content"
                android:layout_width="wrap_content"
                android:layout_gravity="center"
-               android:layout_marginLeft="10dp"
+               android:layout_marginLeft="8dp"
                android:text="Year:"
-
                android:textColor="@color/white"
                android:textStyle="bold"
                />
@@ -65,10 +64,60 @@
                android:layout_gravity="center"
                android:id="@+id/year_top"
                android:layout_alignEnd="@id/bt"
-               android:layout_marginLeft="10dp"
+               android:layout_marginLeft="3dp"
                android:text="year"
                android:textColor="@color/white"
                android:textStyle="bold"
+               />
+           <View
+               android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:layout_weight="0.5"
+               />
+           <ImageView
+               android:id="@+id/upload"
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:src="@drawable/arrow_circle_up_24"
+               android:layout_marginLeft="10dp"
+               android:visibility="visible"
+               android:onClick="uploadToFireBase"
+               android:layout_gravity="center"
+               />
+           <View
+               android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:layout_weight="0.6"
+               />
+           <ImageView
+               android:id="@+id/download"
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:src="@drawable/arrow_circle_down_24"
+               android:layout_marginLeft="10dp"
+               android:visibility="visible"
+               android:onClick="downloadFromFireBase"
+               android:layout_gravity="center"
+               />
+           <View
+               android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:layout_weight="1"
+               />
+           <ImageView
+               android:id="@+id/deleteSelect"
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:src="@drawable/baseline_delete_white"
+               android:layout_marginLeft="10dp"
+               android:visibility="invisible"
+               android:layout_gravity="center"
+
+               />
+           <View
+               android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:layout_weight="0.8"
                />
        </LinearLayout>
        <LinearLayout
@@ -76,6 +125,7 @@
            android:layout_height="80dp"
            android:background="#C1B8D5"
            android:padding="5dp"
+
            android:layout_width="match_parent"
            >
            <TextView
@@ -146,6 +196,7 @@
        <androidx.recyclerview.widget.RecyclerView
            android:layout_width="match_parent"
    android:id="@+id/recyclerView"
+
            android:layout_height="match_parent" />
    </LinearLayout>
 

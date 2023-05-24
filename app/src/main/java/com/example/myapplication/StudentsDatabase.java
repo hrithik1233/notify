@@ -37,17 +37,21 @@ public class StudentsDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
-    public Boolean insert(String TABLE_NAME,StudentData sd){
+    public void createtabel(String TABLE_NAME){
         SQLiteDatabase db=this.getWritableDatabase();
-        long res=-1;
-        try {
-      String table="create table if not exists "+TABLE_NAME+" ( "+STUDENT_ID+" integer primary key autoincrement,"
+        String table="create table if not exists "+TABLE_NAME+" ( "+STUDENT_ID+" integer primary key autoincrement,"
                 +STUDENT_NAME+" TEXT not null,"+STUDENT_AGE+" INTEGER,"
                 +STUDENT_DEPARTMENT+" text,"+STUDENT_GENDER+" TEXT,"
                 +STUDENT_MOBILE_NO+" text,"+STUDENT_REGISTER_NO+" text,"
                 +STUDENT_PARENT_NAME+" text,"+STUDENT_PARENT_MOBILE_NO
                 +" text,"+STUDENT_ADDRESS+" text,"+NO_OF_LATE_COMES +" integer,"+STUDENT_AADHAR_NO+" text);";
         db.execSQL(table);
+    }
+    public Boolean insert(String TABLE_NAME,StudentData sd){
+        SQLiteDatabase db=this.getWritableDatabase();
+        long res=-1;
+        try {
+
         ContentValues cv=new ContentValues();
         cv.put(STUDENT_NAME,sd.getStdnt_name());
         cv.put(STUDENT_AGE,sd.getStdnt_age());
@@ -98,6 +102,7 @@ public class StudentsDatabase extends SQLiteOpenHelper {
       db.close();
       return res!=-1;
   }
+
   public void dropTable(String table){
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL("drop table if exists "+table);

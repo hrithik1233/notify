@@ -5,32 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-
     tools:context=".Home">
+
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
         <RelativeLayout
-            android:id="@+id/top"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
             android:background="@color/purple_700"
-            app:layout_constraintTop_toTopOf="parent">
-
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <ImageView
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/main_menu"
+                android:scaleX="1.2"
+                android:scaleY="1.2"
+                android:onClick="MenuBarClick"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@drawable/menu_24"
+                />
         </RelativeLayout>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/batch_recycler"
             android:layout_width="match_parent"
-
             android:layout_height="match_parent"
             android:padding="10dp"
-
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +44,6 @@
 
     </LinearLayout>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:clickable="true"
@@ -50,18 +54,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.858"
-            android:src="@drawable/_add_24"
+            app:srcCompat="@drawable/_add_24"
             app:maxImageSize="60dp"
+            android:focusable="true"
+            android:contentDescription="TODO" />
 
 
-            />
 
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="200dp"
-        android:id="@+id/nav"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="731dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

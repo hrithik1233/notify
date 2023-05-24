@@ -5,6 +5,11 @@ import android.widget.RelativeLayout;
 public class StudentData {
     public static Boolean isSelectionMode=false;
     boolean isSelected=false;
+
+    public StudentData() {
+
+    }
+
     public  boolean getIsselected(){
         return isSelected;
     }

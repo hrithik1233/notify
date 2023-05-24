@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/mian_layout_anim_login"
+    android:background="@drawable/animation_background"
+    android:layout_gravity="center"
+    android:gravity="center"
+
+    tools:context=".LoginPage">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_marginBottom="26dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+         />
+
+    <EditText
+        android:id="@+id/loginName"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="26dp"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/gradient_border"
+        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        android:drawableLeft="@drawable/person_24"
+        android:ems="10"
+        android:hint="name"
+        android:inputType="textPersonName"
+        android:maxLength="16"
+        android:padding="8dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black" />
+
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="26dp"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/gradient_border"
+        android:drawableLeft="@drawable/lock_24"
+        android:ems="10"
+        android:hint="password"
+        android:maxLength="16"
+        android:padding="8dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
+      />
+    <EditText
+        android:id="@+id/login_email"
+        android:layout_width="250dp"
+        android:textColorHint="#5A5858"
+        android:padding="8dp"
+        android:background="@drawable/gradient_border"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:layout_marginBottom="2dp"
+        android:drawableLeft="@drawable/email_24"
+        android:maxLength="60"
+        android:ems="10"
+        android:hint="email:-recovery"
+        android:inputType="textEmailAddress"
+        />
+    <TextView
+        android:id="@+id/forgot_password_login_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="forgotpassword"
+        android:layout_gravity="center"
+        android:layout_marginVertical="10dp"
+        android:textColor="@color/white"
+        android:text="forgot password ?" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:background="@drawable/gradient_bcakground_for_login"
+        android:onClick="login"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="login"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="21sp" />
+    </RelativeLayout>
+
+</LinearLayout>

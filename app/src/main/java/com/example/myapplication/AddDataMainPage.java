@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
@@ -8,11 +9,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -27,16 +31,26 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class AddDataMainPage extends AppCompatActivity implements  StudentResponseInterface{
   TextView ed1,ed2,numberOfStudentsTextView;
    ArrayList<StudentData> selected;
    EditText name,deptmnt,age,stdnt_contctno,gender,parentName,parentMobile,address,aadhar;
    TextView create,cancel,title;
-  ImageView back;
+  ImageView back,selectdelete;
   FloatingActionButton send,edit,addStudent;
   RecyclerView recyclerView;
 
@@ -49,14 +63,16 @@ public class AddDataMainPage extends AppCompatActivity implements  StudentRespon
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_data_main_page);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+       // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         numberOfStudentsTextView=findViewById(R.id.numberofstudents);
         selected=new ArrayList<>();
         db=new StudentsDatabase(this);
-        send=findViewById(R.id.floatingActionButtonsend);
-        addStudent=findViewById(R.id.floatingActionButtonadd);
+
         edit=findViewById(R.id.floatingActionButtonedit);
+        addStudent=findViewById(R.id.floatingActionButtonadd);
+        send=findViewById(R.id.floatingActionButtonsend);
         recyclerView=findViewById(R.id.recyclerView);
+        selectdelete=findViewById(R.id.deleteSelect);
         arrayList=new ArrayList<StudentData>();
   ed1=findViewById(R.id.batch_top);
   ed2=findViewById(R.id.year_top);
@@ -65,10 +81,15 @@ public class AddDataMainPage extends AppCompatActivity implements  StudentRespon
         String bt=intent.getStringExtra("batch_name");
         String yr=intent.getStringExtra("batchYear");
         dataBaseName=intent.getStringExtra("TABLE_NAME");
+        db.createtabel(dataBaseName);
 
+        setMultiDeletesetup();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter=new StudentDataAdapter(AddDataMainPage.this,arrayList,AddDataMainPage.this);
+        recyclerView.setAdapter(adapter);
   ed1.setText(bt);
   ed2.setText(yr);
+
   addStudent.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -98,9 +119,17 @@ public class AddDataMainPage extends AppCompatActivity implements  StudentRespon
                     if(gender.getText().toString().length()>=1){
                         gder = Character.toUpperCase(gender.getText().toString().charAt(0));
                     }
-
-                    if (!validAge(age2)|| name.getText().toString().equals("")||!valiGender(gder)) {
-                        Toast.makeText(AddDataMainPage.this, "Enter valid data", Toast.LENGTH_SHORT).show();
+                    if(!valiGender(gder)){
+                        gender.setError("m/f");
+                        gender.requestFocus();
+                    }else
+                    if(!validAge(age2)){
+                        age.setError("invalid");
+                        age.requestFocus();
+                    }else
+                    if (name.getText().toString().equals("")) {
+                       name.setError("blank");
+                       name.requestFocus();
                     } else {
                         StudentData data = new StudentData(name.getText().toString(), gender.getText().toString()
                                 , age2, deptmnt.getText().toString(),
@@ -140,10 +169,9 @@ public class AddDataMainPage extends AppCompatActivity implements  StudentRespon
   send.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+          Toast.makeText(AddDataMainPage.this, "send", Toast.LENGTH_SHORT).show();
 
-          if(selected.size()>=1){
-              Toast.makeText(AddDataMainPage.this, selected.get(selected.size()-1).getStdnt_name(), Toast.LENGTH_SHORT).show();
-          }
+
       }
   });
   edit.setOnClickListener(new View.OnClickListener() {
@@ -223,10 +251,10 @@ public class AddDataMainPage extends AppCompatActivity implements  StudentRespon
             @Override
             public void onClick(View view) {
                 int age2 = age.getText().toString() == "" ? null: arrayList.get(pos).getStdnt_age();
-
                 int id = arrayList.get(pos).getId();
-
-               char gder = Character.toUpperCase(gender.getText().toString().charAt(0));
+               char gder=' ';
+               if(gender.getText().toString().length()>=1)
+                gder= Character.toUpperCase(gender.getText().toString().charAt(0));
 
                 if(!validAge(age2)||!valiGender(gder)){
                     Toast.makeText(AddDataMainPage.this, "Enter valid data", Toast.LENGTH_SHORT).show();
@@ -264,44 +292,153 @@ public class AddDataMainPage extends AppCompatActivity implements  StudentRespon
     @SuppressLint("ResourceAsColor")
     @Override
     public void onLongpress(int pos,ArrayList<StudentData> studentData) {
-
-
+     if(studentData.size()>=1){
+         selectdelete.setVisibility(View.VISIBLE);
+     }
+        selected=studentData;
     }
     @Override
     public void onClick(int pos, ArrayList<StudentData> studentData) {
-        for(StudentData x:studentData){
-            System.out.println(x.getStdnt_name());
-        }
-        Toast.makeText(this,""+ studentData.size(), Toast.LENGTH_SHORT).show();
+        selected=studentData;
+       if(studentData.size()==0)
+           selectdelete.setVisibility(View.INVISIBLE);
     }
 
     @SuppressLint("ResourceAsColor")
 
     private void intialise(){
+
         try {
+            selectdelete.setVisibility(View.INVISIBLE);
+            selected.clear();
             arrayList.clear();
-        Cursor cursor=db.fetch(dataBaseName);
-    if(cursor!=null&&cursor.moveToNext()){
-        do{
-            StudentData data=new StudentData(cursor.getInt(0),
-                    cursor.getString(1),cursor.getString(2)
-                    ,cursor.getInt(3),cursor.getString(4)
-                    ,cursor.getString(5)
-                    ,cursor.getString(6),cursor.getString(7),cursor.getString(8),cursor.getInt(9),cursor.getString(10));
-            arrayList.add(data);
-        }while (cursor.moveToNext());
+            try{
+                Cursor cursor=db.fetch(dataBaseName);
+                if(cursor!=null&&cursor.moveToNext()){
+                    do{
+                        StudentData data=new StudentData(cursor.getInt(0),
+                                cursor.getString(1),cursor.getString(2)
+                                ,cursor.getInt(3),cursor.getString(4)
+                                ,cursor.getString(5)
+                                ,cursor.getString(6),cursor.getString(7),cursor.getString(8),cursor.getInt(9),cursor.getString(10));
+                        arrayList.add(data);
+                    }while (cursor.moveToNext());
+
+                }
+            }catch (Exception t){}
+    if(arrayList.size()==0){
+        SharedPreferences pref=getSharedPreferences("applogin",MODE_PRIVATE);
+        String databaseMain=pref.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
+        DatabaseReference firebase=FirebaseDatabase.getInstance().getReference(databaseMain).child(dataBaseName).child("studentdata");
+
+        ProgressDialog progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        boolean isInternetConnected=NetworkUtils.isInternetIsConnected(this);
+        if(isInternetConnected){
+            progressDialog.show();
+        }
+
+        firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                  progressDialog.dismiss();
+                Toast.makeText(AddDataMainPage.this, snapshot.getChildrenCount()+"", Toast.LENGTH_SHORT).show();
+                for(DataSnapshot data:snapshot.getChildren()){
+                    StudentData dt=data.getValue(StudentData.class);
+                    if(dt!=null){
+                        Toast.makeText(AddDataMainPage.this, dt.getStdnt_name(), Toast.LENGTH_SHORT).show();
+                        arrayList.add(dt);
+                        db.insert(dataBaseName,dt);
+                    }
+                }
+                adapter=new StudentDataAdapter(AddDataMainPage.this,arrayList,AddDataMainPage.this);
+                recyclerView.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                progressDialog.dismiss();
+            }
+
+        });
+
+
     }
+          //  Toast.makeText(this, arrayList.size()+"", Toast.LENGTH_SHORT).show();
+            adapter=new StudentDataAdapter(AddDataMainPage.this,arrayList,this);
+            recyclerView.setAdapter(adapter);
         numberOfStudentsTextView.setText("No of students : "+Integer.toString(arrayList.size()));
-        adapter=new StudentDataAdapter(this,arrayList,this);
-        adapter.setHasStableIds(true);
-        recyclerView.setAdapter(adapter);
-        }catch (Exception e){}
+
+        }catch (Exception e){
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+        }
+
+
     }
     public static boolean validAge(int age){
-        return age>1&&age<100;
+        return age>=1&&age<100;
     }
     private static  boolean valiGender(char m){
-        return m=='f'||m=='F'||m=='M'||m=='m';
+        return m=='f'||m=='F'||m=='M'||m=='m'||m==' ';
     }
 
+    void setMultiDeletesetup(){
+        selectdelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder builder=new AlertDialog.Builder(new ContextThemeWrapper(AddDataMainPage.this,R.style.CustomAlertDialogTheme));
+                builder.setTitle("Delete items").setMessage("Do you want to delete records ("+selected.size()+")")
+                        .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                int count=0;
+                                for(int j=0;j<selected.size();j++){
+                                    boolean res=db.delete(dataBaseName,Integer.toString(selected.get(j).getId()));
+                                    System.out.println(selected.get(j));
+                                    if(res){
+                                        count++;
+                                    }
+
+                                }
+                                Toast.makeText(AddDataMainPage.this, ""+count+" items deleted", Toast.LENGTH_SHORT).show();
+
+                                intialise();
+                                selectdelete.setVisibility(View.INVISIBLE);
+                            }
+                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        }).show();
+
+
+            }
+        });
+    }
+
+    public void uploadToFireBase(View v){
+
+
+    }
+
+    public void downloadFromFireBase(View v){
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        SharedPreferences pref=getSharedPreferences("applogin",MODE_PRIVATE);
+        String databaseMain=pref.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
+        DatabaseReference firebase=FirebaseDatabase.getInstance().getReference(databaseMain).child(dataBaseName);
+        for(int i=0;i<arrayList.size();i++){
+            firebase.child("studentdata").child(arrayList.get(i).getId()+"").setValue(arrayList.get(i));
+        }
+    }
 }

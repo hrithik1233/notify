@@ -83,6 +83,20 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
                     }
                 }
             });
+
+
+            lateComesText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(responseInterface1!=null){
+                        int pos=getAdapterPosition();
+                        if(pos!=RecyclerView.NO_POSITION){
+                            Toast.makeText(context,"No of time inspected: " +arrayList.get(pos).getNumber_of_late_comes(), Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                }
+            });
             edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

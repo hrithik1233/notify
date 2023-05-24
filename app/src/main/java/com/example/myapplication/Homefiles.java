@@ -10,6 +10,7 @@ public class Homefiles {
         this.year = year;
         setTable_Name();
     }
+    public  Homefiles(){}
   public String getTable_Name(){return Table_Name;}
     public void setTable_Name(){
       for(char c:batch.toCharArray()){
