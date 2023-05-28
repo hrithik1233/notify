@@ -12,8 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
-        android:orientation="vertical"
-        android:focusable="true">
+        android:orientation="vertical">
         <RelativeLayout
             android:background="@color/purple_700"
             android:layout_width="match_parent"
@@ -22,7 +21,7 @@
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/animation_view"
                 android:layout_width="35dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:layout_height="wrap_content"
                 android:onClick="MenuBarClick"
                android:scaleY="1.9"
@@ -35,9 +34,9 @@
                 android:textColor="@color/white"
                 android:layout_centerVertical="true"
                 android:textSize="20sp"
-                android:layout_marginStart="10dp"
-                android:text="@string/notify"
-                android:layout_toEndOf="@id/animation_view"
+                android:layout_marginLeft="10dp"
+                android:text="notify"
+                android:layout_toRightOf="@id/animation_view"
                 />
 
         </RelativeLayout>
@@ -63,7 +62,6 @@
             app:layout_constraintVertical_bias="0.858"
             app:srcCompat="@drawable/_add_24"
             app:maxImageSize="60dp"
-            android:onClick="addBatch"
             android:focusable="true"
             android:contentDescription="@string/todo" />
 

@@ -146,7 +146,6 @@
            </LinearLayout>
 
 
-
            <View
                android:layout_width="0dp"
                android:layout_height="wrap_content"
@@ -180,7 +179,7 @@
 
                android:clickable="true"
                android:foregroundTint="@color/white"
-              android:src="@drawable/send_24"/>
+              android:src="@drawable/baseline_message_24"/>
            <View
                android:layout_width="0dp"
                android:layout_height="wrap_content"
@@ -208,19 +207,7 @@
 
        </LinearLayout>
 
-    <LinearLayout
-        android:layout_height="35dp"
-        android:background="#C1B8D5"
-        android:layout_width="match_parent">
-     <EditText
-         android:layout_height="wrap_content"
-         android:textColor="@color/black"
-         android:textSize="14sp"
-         android:id="@+id/student_search"
-         android:layout_width="match_parent"
-         android:drawableRight="@drawable/search_24"
-         />
-    </LinearLayout>
+
 
        <androidx.recyclerview.widget.RecyclerView
            android:layout_width="match_parent"

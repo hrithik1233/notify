@@ -1,39 +1,81 @@
 package com.example.myapplication;
 
 import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.AccessibilityServiceInfo;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Toast;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WhatsappService extends AccessibilityService {
+    public void onAccessibilityEvent(AccessibilityEvent event) {
+        // Handle accessibility events here
+        // For example, perform automatic clicks when certain conditions are met
+        performAutomaticClicks(event);
+    }
+
+
     @Override
-    public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
-        if(getRootInActiveWindow()==null) return;
-        AccessibilityNodeInfoCompat rootNodeinfo=AccessibilityNodeInfoCompat.wrap(getRootInActiveWindow());
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        // Configure your accessibility service here
+        configureAccessibilityService();
+    }
 
-        List<AccessibilityNodeInfoCompat> messageNodeList=rootNodeinfo.findAccessibilityNodeInfosByViewId("com.whatsapp:id/entry");
-        if(messageNodeList==null || messageNodeList.isEmpty()) return;
+    private void configureAccessibilityService() {
+        AccessibilityServiceInfo serviceInfo = new AccessibilityServiceInfo();
 
-        AccessibilityNodeInfoCompat messageField=messageNodeList.get(0);
-        if(messageField==null ||messageField.getText().toString().length()==0|| !messageField.getText().toString().endsWith("   "))
-         return;
-        List<AccessibilityNodeInfoCompat> sendmessageNodeList=rootNodeinfo.findAccessibilityNodeInfosByViewId("com.whatsapp:id/send");
-        if(sendmessageNodeList==null || sendmessageNodeList.isEmpty()) return;
+        // Set the event types you want to listen for
+        serviceInfo.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | AccessibilityEvent.TYPE_VIEW_CLICKED;
 
-        AccessibilityNodeInfoCompat sendMessage=sendmessageNodeList.get(0);
-        if(!sendMessage.isVisibleToUser()) return;
-        sendMessage.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+        // Set the feedback type(s) you want to receive
+        serviceInfo.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
 
+        // Set additional service configuration options if needed
+        // ...
+
+        // Set the package(s) you want to monitor
+        serviceInfo.packageNames = new String[]{"com.whatsapp"};
+
+        // Enable your service
+        setServiceInfo(serviceInfo);
+    }
+
+    private void performAutomaticClicks(AccessibilityEvent event) {
         try{
 
-            Thread.sleep(2000);
-            performGlobalAction(GLOBAL_ACTION_BACK);
-            Thread.sleep(2000);
+
+            AccessibilityNodeInfo rootNode = getRootInActiveWindow();
+            if (rootNode != null) {
+                // Perform automatic clicks based on the UI hierarchy
+                // Find the desired UI elements using AccessibilityNodeInfo methods (e.g., findAccessibilityNodeInfosByViewId)
+
+                // Example: Click the "Send" button in a WhatsApp chat
+                List<AccessibilityNodeInfo> sendButtonNodes = rootNode.findAccessibilityNodeInfosByViewId("com.whatsapp:id/send");
+                if (!sendButtonNodes.isEmpty()) {
+                    AccessibilityNodeInfo sendButtonNode = sendButtonNodes.get(0);
+                    sendButtonNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                }else Toast.makeText(this, "err", Toast.LENGTH_SHORT).show();
+
+
+
+                // Close the app after performing the necessary actions
+
+                Thread.sleep(1000);
+
+
+
+            }
         }catch (Exception e){}
-         performGlobalAction(GLOBAL_ACTION_BACK);
     }
 
     @Override

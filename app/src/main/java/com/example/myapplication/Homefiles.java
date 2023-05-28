@@ -4,6 +4,14 @@ public class Homefiles {
     String batch;
     String year;
     String Table_Name="";
+    String NoOfBatches="";
+
+    public Homefiles(String batch, String year, String table_Name, String noOfBatches) {
+        this.batch = batch;
+        this.year = year;
+        Table_Name = table_Name;
+        NoOfBatches = noOfBatches;
+    }
 
     public Homefiles(String batch, String year) {
         this.batch = batch;

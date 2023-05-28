@@ -22,6 +22,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class SignUpActivity extends AppCompatActivity {
    public static final  String APP_LOGIN="applogin";
@@ -44,7 +50,7 @@ public class SignUpActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide(); // Hide the action bar
         }
-        if (Build.VERSION.SDK_INT >=   Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.KITKAT) {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
@@ -86,6 +92,7 @@ public class SignUpActivity extends AppCompatActivity {
                     editor.putString("login_email",_email);
                     editor.putString(MAIN_DATABASE_NAME,MainDatabase_name);
                     editor.commit();
+                    firebaseIntailization();
                     startActivity(intent);
                     finish();
                 }else{
@@ -112,6 +119,33 @@ public class SignUpActivity extends AppCompatActivity {
 
         }
     }
+    private void firebaseIntailization() {
+        try {
+            DatabaseReference firebase;
+            SharedPreferences pref=getSharedPreferences("applogin",MODE_PRIVATE);
+            String databaseMain=pref.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
+            FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+            firebase= FirebaseDatabase.getInstance().getReference();
+            String name=pref.getString("login_name","unotherized");
+            Toast.makeText(this, databaseMain, Toast.LENGTH_SHORT).show();
+            Calendar calendar = Calendar.getInstance(); // For Calendar class
+            Date currentDate = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String date = dateFormat.format(currentDate);
+            String time=calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE);
+            DateAndTime dateAndTime=new DateAndTime(date,time);
+            firebase.child(databaseMain).child("Userdata-1").child("email").setValue(pref.getString("login_email",""));
+            firebase.child(databaseMain).child("Userdata-1").child("name").setValue(name);
+            firebase.child(databaseMain).child("Userdata-1").child("dateAndTime").setValue(dateAndTime);
+
+
+        }catch (Exception e){
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+
+    }
+
 
 
 

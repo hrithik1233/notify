@@ -43,6 +43,7 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull StudentDataAdapter.MyViewHolder holder, int pos) {
+
    holder.lateComesText.setText(Integer.toString(arrayList.get(pos).getNumber_of_late_comes()));
    holder.nameText.setText(arrayList.get(pos).getStdnt_name());
    holder.idtext.setText(Integer.toString(arrayList.get(pos).getId()));
@@ -70,6 +71,7 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
             nameText=itemView.findViewById(R.id.student_name);
             lateComesText=itemView.findViewById(R.id.student_late_comes);
             idtext=itemView.findViewById(R.id.studentId);
+
 
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -166,4 +168,15 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
         }
 
     }
+    public  void filter(ArrayList<StudentData> dt){
+        arrayList=dt;
+        for(int i=0;i<arrayList.size();i++){
+            if(arrayList.get(i).isSelected){
+
+            }
+
+        }
+        notifyDataSetChanged();
+    }
+
 }

@@ -3,4 +3,19 @@
     <string name="accessibility_service_description">This service provides enhanced accessibility features for our app.</string>
     <string name="nav_open">open Navigation Drawer</string>
     <string name="nav_close">close Navigation Drawer</string>
+    <string name="_1">1</string>
+    <string name="testname">testname</string>
+    <string name="_230">230</string>
+    <string name="todo">TODO</string>
+    <string name="password_forgotton_details">if you forgotton your password, go to the login page and a forgot password-link is mentioned, press the link, A password reset link will me shared to your mentioed email address \n \n Note: if link not showing check if your content provider put it to the spam</string>
+    <string name="whatsapp_share_not_working">Whtsapp sharing not working?</string>
+    <string name="whtsapp_not_working">if you find whtsapp sharing not working, go to your settings and allow accessibility serivice for notify app \n Settings ->Accessibility service ->notify app ->allow accessiblity </string>
+    <string name="notify">notify</string>
+    <string name="batch_name">Batch Name:</string>
+    <string name="year">Year :</string>
+    <string name="batch_year">Batch year...</string>
+    <string name="cancel">Cancel</string>
+    <string name="create">Create</string>
+    <string name="batch_namehint">Batch Name...</string>
+    <string name="create_batch">CREATE BATCH</string>
 </resources>

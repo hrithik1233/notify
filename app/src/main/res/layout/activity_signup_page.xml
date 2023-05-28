@@ -95,5 +95,6 @@
             android:layout_centerVertical="true"
             android:text="sign up" />
     </RelativeLayout>
+
         </LinearLayout>
 </LinearLayout>

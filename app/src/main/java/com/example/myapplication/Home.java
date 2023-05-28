@@ -1,15 +1,13 @@
 package com.example.myapplication;
 
 import static com.example.myapplication.SignUpActivity.APP_LOGIN;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -17,22 +15,25 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.database.Cursor;
-import android.net.Uri;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.provider.Settings;
-import android.view.MenuItem;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.navigation.NavigationView;
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -42,6 +43,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 
@@ -55,6 +57,8 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
     FirebaseAuth fireAuth;
     DatabaseReference firebase;
     FirebaseUser user;
+    Dialog navManu;
+    String databaseMain="";
 
     HomeFilesAdapter homeFilesAdapter;
 
@@ -64,80 +68,119 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-//        Intent whts = new Intent(Intent.ACTION_VIEW);
-//        whts.setPackage("com.whatsapp");
-//        whts.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        whts.setData(Uri.parse("https://api.whatsapp.com/send?phone=" + "7994497571" + "&text=" + Uri.encode("hello world")));
-//        getApplicationContext().startActivity(whts);
+
+        navManu=new Dialog(this);
+        navManu.setContentView(R.layout.navingatiob_bar);
+        setPrefrences();
+        navManu.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        navManu.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
+        navManu.getWindow().setGravity(Gravity.LEFT);
+        navManu.getWindow().getAttributes().windowAnimations=R.style.SlideDialogAnimation;
+        navManu.setCancelable(true);
+        navManu.setCanceledOnTouchOutside(true);
 
         SharedPreferences preferences=getSharedPreferences(APP_LOGIN,MODE_PRIVATE);
-        fireAuth=FirebaseAuth.getInstance();
-        user=fireAuth.getCurrentUser();
+        databaseMain=preferences.getString(SignUpActivity.MAIN_DATABASE_NAME, "default");
+
+        DatabaseReference ref=FirebaseDatabase.getInstance().getReference();
+        DatabaseReference reff1=ref.child(databaseMain).child("Userdata-1");
+
+        reff1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                SharedPreferences preferences=getSharedPreferences(APP_LOGIN,MODE_PRIVATE);
+                SharedPreferences.Editor editor=preferences.edit();
+                for(DataSnapshot data:snapshot.getChildren()){
+                    if(data.getKey()=="name"){
+                        Toast.makeText(Home.this, "sdf", Toast.LENGTH_SHORT).show();
+                        String val=data.getValue(String.class);
+                        editor.putString("login_name",val);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+
         String Main_database_name="";
-        if(user!=null){
+
             Main_database_name=preferences.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
-        }
-        /*/
-        declare the  database such when a new user or already existing user login
-        it's check if the persons database exists if not exists it's create a new main database
-        that hold the name,and email of the user
-        */
 
-        firebaseIntailization();
-
-        //
 
         String db=preferences.getString(SignUpActivity .MAIN_DATABASE_NAME,"batch.db");
         String name=preferences.getString("login_name","");
         String password=preferences.getString("login_password","");
         SharedPreferences pre=getSharedPreferences(APP_LOGIN,MODE_PRIVATE);
-        if(!pre.getBoolean("isaccessed",true)){
-            Intent acc=new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            acc.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(acc);
-            SharedPreferences.Editor editor=pre.edit();
-            editor.putBoolean("isaccessed",true);
-            editor.commit();
-        }
+
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!pre.getBoolean("isaccessed",true)){
+                    Intent acc=new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                    acc.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(acc);
+                    SharedPreferences.Editor editor=pre.edit();
+                    editor.putBoolean("isaccessed",true);
+                    editor.commit();
+                }
+
+            }
+        },3000);
 
         recyclerView=findViewById(R.id.batch_recycler);
         arrayList=new ArrayList<>();
         dialog=new Dialog(this);
         dialog.setContentView(R.layout.add_newbatch_diolgue);
+
          databaseBatch=new DatabaseBatch(this,Main_database_name);
         recyclerView.setLayoutManager(new GridLayoutManager(this,3));
         homeFilesAdapter=new HomeFilesAdapter(Home.this,arrayList, this);
         recyclerView.setAdapter(homeFilesAdapter);
+
        // fetch the database and load the data of batches into the main page..
         fetch();
        //..
+
+
     }
 
-    private void firebaseIntailization() {
-        try {
+    private void setPrefrences() {
+        SharedPreferences pref = getSharedPreferences("applogin", MODE_PRIVATE);
+        DatabaseReference ref=FirebaseDatabase.getInstance().getReference(databaseMain+"/"+"Userdata-1/dateAndTime");
+        Toast.makeText(this, databaseMain, Toast.LENGTH_SHORT).show();
+        SharedPreferences.Editor editor=pref.edit();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChildren()) {
 
-       SharedPreferences pref=getSharedPreferences("applogin",MODE_PRIVATE);
-        String databaseMain=pref.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
-       FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
-            firebase=FirebaseDatabase.getInstance().getReference();
-       String name=pref.getString("login_name","unotherized");
-            Toast.makeText(this, databaseMain, Toast.LENGTH_SHORT).show();
+                    for(DataSnapshot data:snapshot.getChildren()){
+                        if(Objects.equals(data.getKey(), "date")){
+                            String date=data.getValue(String.class);
+                           editor.putString("reg_date",date);
+                        }else{
+                            String time=data.getValue(String.class);
+                            editor.putString("reg_time",time);}}
+                    editor.apply();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}});
 
-           firebase.child(databaseMain).child("Userdata-1").child("email").setValue(pref.getString("login_email",""));
-          firebase.child(databaseMain).child("Userdata-1").child("name").setValue(pref.getString("login_name",""));
-
-
-
-        }catch (Exception e){
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
 
     }
+
 
     public void addBatch(View view){
         try {
@@ -174,16 +217,17 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
                     Homefiles homefiles=new Homefiles(name,year);
                     //inserting the batch details into the database
                     Boolean res=databaseBatch.insert(homefiles);
-                    SharedPreferences pref=getSharedPreferences("applogin",MODE_PRIVATE);
-                    String databaseMain=pref.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
                     firebase=FirebaseDatabase.getInstance().getReference(databaseMain);
                     firebase.child(homefiles.getTable_Name()).child("batchdata").setValue(homefiles);
                    if(res){
-                       arrayList.add(homefiles);
+                       SharedPreferences pref = getSharedPreferences("applogin", MODE_PRIVATE);
+                       String databaseMain = pref.getString(SignUpActivity.MAIN_DATABASE_NAME, "default");
+                       DatabaseReference firebase = FirebaseDatabase.getInstance().getReference(databaseMain).child(homefiles.getTable_Name());
+                       firebase.child("batchdata").child("NoOfStudents").setValue("0");
+                       arrayList.add(0,homefiles);
 
                        Toast.makeText(Home.this, "Batch has been created successfully", Toast.LENGTH_SHORT).show();
-
-                       recyclerView.setAdapter(homeFilesAdapter);
+                      homeFilesAdapter.notifyDataSetChanged();
                    }else{
                        Toast.makeText(Home.this, "Batch already exists", Toast.LENGTH_SHORT).show();
                    }
@@ -220,16 +264,14 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
             do{
               arrayList.add(new Homefiles(cursor.getString(f1),cursor.getString(f2)));
             }while (cursor.moveToNext());
-
-            recyclerView.setAdapter(homeFilesAdapter);
+            Collections.reverse(arrayList);
+           homeFilesAdapter.notifyDataSetChanged();
 
         }
             if(arrayList.size()==0){
                 ProgressDialog progressDialog=new ProgressDialog(this);
                 progressDialog.setCancelable(false);
                 progressDialog.show();
-                SharedPreferences pref=getSharedPreferences("applogin",MODE_PRIVATE);
-                String databaseMain=pref.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
                 firebase=FirebaseDatabase.getInstance().getReference(databaseMain);
                 firebase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -252,8 +294,10 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
                             }
 
                         }
+                        Collections.reverse(arrayList);
+                        System.out.println(arrayList);
                         progressDialog.dismiss();
-                        recyclerView.setAdapter(homeFilesAdapter);
+                        homeFilesAdapter.notifyDataSetChanged();
 
                     }
 
@@ -295,11 +339,7 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
                         String yr=year.getText().toString();
                         Homefiles hf=new Homefiles(n1,yr);
                         Boolean res=databaseBatch.update(arrayList.get(position),hf);
-                        SharedPreferences pref=getSharedPreferences("applogin",MODE_PRIVATE);
-                        String databaseMain=pref.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
                         DatabaseReference fr=FirebaseDatabase.getInstance().getReference(databaseMain);
-
-
                         if(res){
                             arrayList.get(position).setYear(yr);
                             arrayList.get(position).setBatch(n1);
@@ -308,7 +348,7 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
                             Toast.makeText(Home.this, "Reanme unsuccesfull", Toast.LENGTH_SHORT).show();
                         }
 
-                        recyclerView.setAdapter(homeFilesAdapter);
+                        homeFilesAdapter.notifyDataSetChanged();
                         dlog.dismiss();
                         dialog1.dismiss();
                        System.out.println(name.toString());
@@ -327,7 +367,6 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
 
             }
         });
-
         bt2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -341,8 +380,6 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
                                 Boolean res=databaseBatch.delete(arrayList.get(position));
                                 StudentsDatabase db=new StudentsDatabase(Home.this);
                                db.dropTable(tableName);
-                                SharedPreferences pref=getSharedPreferences("applogin",MODE_PRIVATE);
-                                String databaseMain=pref.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
                                DatabaseReference firebase=FirebaseDatabase.getInstance().getReference(databaseMain);
                                 Toast.makeText(Home.this, databaseMain, Toast.LENGTH_SHORT).show();
                               boolean res2= firebase.child(tableName).removeValue().isSuccessful();
@@ -350,7 +387,7 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
                                firebase.child(tableName).removeValue();
                                 if(res){
                                     arrayList.remove(position);
-                                    recyclerView.setAdapter(homeFilesAdapter);
+                                    homeFilesAdapter.notifyDataSetChanged();
                                     Toast.makeText(Home.this, temp+" successfully removed", Toast.LENGTH_SHORT).show();
                                 }
                                 dialog1.cancel();
@@ -369,42 +406,134 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface{
 
     @SuppressLint("SuspiciousIndentation")
     @Override
-    public void onBackPressed() {
-            super.onBackPressed();
-
-        SharedPreferences pref=getSharedPreferences("applogin",MODE_PRIVATE);
-        String databaseMain=pref.getString(SignUpActivity.MAIN_DATABASE_NAME,"default");
-
-        for(Homefiles data:arrayList){
-            firebase=FirebaseDatabase.getInstance().getReference(databaseMain);
-            firebase.child(data.getTable_Name()).child("batchdata").setValue(data);
-        }
-
+    public void onDestroy() {
+        HandlerThread handlerThread = new HandlerThread("MyHandlerThread");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (Homefiles data : arrayList) {
+                    firebase = FirebaseDatabase.getInstance().getReference(databaseMain);
+                    firebase.child(data.getTable_Name()).child("batchdata").setValue(data);
+                }
+                runOnUiThread(new Runnable() {@Override
+                public void run() {
+                        // Update UI here
+                    }
+                });
+            }
+        });
+        super.onDestroy();
     }
 
-    Boolean click=true;
+    Boolean IsNavopen=false;
 
     public void MenuBarClick(View v){
-        ImageView img=findViewById(R.id.main_menu);
+        LottieAnimationView animationView;
+        animationView=findViewById(R.id.animation_view);
+        animationView.setAnimation(R.raw.cross_nav);
+        animationView.playAnimation();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    animationView.clearAnimation();
+                    animationView.cancelAnimation();
+                    animationView.setProgress(0f);
+
+                }
+            },1000);
+
+        navManu.show();
+       ImageView close=navManu.findViewById(R.id.animation_close);
+        Animation ballsquash=AnimationUtils.loadAnimation(this,R.anim.bouns_squash);
+        close.startAnimation(ballsquash);
+       close.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               navManu.dismiss();
+               close.startAnimation(ballsquash);
+               new Handler().postDelayed(new Runnable() {
+                   @Override
+                   public void run() {
+                       animationView.playAnimation();
+                   }
+               },500);
+
+           }
+       });
+      navManu.setOnCancelListener(new DialogInterface.OnCancelListener() {
+          @Override
+          public void onCancel(DialogInterface dialogInterface) {
+              navManu.dismiss();
+              new Handler().postDelayed(new Runnable() {
+                  @Override
+                  public void run() {
+                      animationView.playAnimation();
+                  }
+              },500);
+          }
+      });
+       TextView settings,help,logout,nav_name,nav_email;
+       settings=navManu.findViewById(R.id.nav_settings);
+       help=navManu.findViewById(R.id.nav_help);
+       logout=navManu.findViewById(R.id.nav_logout);
+       nav_name=navManu.findViewById(R.id.nav_name);
+       nav_email=navManu.findViewById(R.id.nav_email);
+        SharedPreferences preferences=getSharedPreferences(APP_LOGIN,MODE_PRIVATE);
+        String name=preferences.getString("login_name","");
+        String email=preferences.getString("login_email","");
+        nav_name.setText("@/:"+name);
+        nav_email.setText(email);
+
+       settings.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               Intent intent=new Intent(Home.this, MenuSettings.class);
+               startActivity(intent);
+           }
+       });
+       help.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               Intent intent=new Intent(Home.this,HelpMenuOptionActivity.class);
+               startActivity(intent);
+           }
+       });
 
 
-        if(click){
-            Animation animation= AnimationUtils.loadAnimation(this,R.anim.rotate_start_dase);
-            animation.setFillAfter(true);
-            img.startAnimation(animation);
-            click=false;
-        }else{
-            Animation animation= AnimationUtils.loadAnimation(this,R.anim.rotate_end_dase);
-            animation.setFillAfter(true);
-            img.startAnimation(animation);
-            click=true;
-        }
+
+      logout.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+              AlertDialog.Builder logout= new AlertDialog.Builder(new ContextThemeWrapper(Home.this,R.style.CustomAlertDialogTheme));
+              logout.setTitle("Log out").setMessage("Do you want to log out").setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialogInterface, int i) {
+                      dialogInterface.dismiss();
+                  }
+              }).setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialogInterface, int i) {
+                      SharedPreferences pre=getSharedPreferences(APP_LOGIN,MODE_PRIVATE);
 
 
+                          SharedPreferences.Editor editor=pre.edit();
+                          editor.putBoolean("isaccessed",false);
+                          editor.commit();
 
+                      FirebaseAuth auth=FirebaseAuth.getInstance();
+                      auth.signOut();
+                      Intent intent=new Intent(Home.this,LoginActivity.class);
+                      startActivity(intent);
+                      finish();
+                      dialogInterface.dismiss();
+                      Toast.makeText(Home.this, "your loged out", Toast.LENGTH_SHORT).show();
+                  }
+              }).show();
 
-
-
-        Toast.makeText(this, "menu", Toast.LENGTH_SHORT).show();
+          }
+      });
     }
+
 }

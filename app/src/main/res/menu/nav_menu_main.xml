@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group >
 
         <item
             android:id="@+id/nav_settings"
@@ -8,7 +8,7 @@
             android:icon="@drawable/ic_settings" />
     </group>
 
-    <group android:checkableBehavior="single">
+    <group >
 
             />
 
@@ -18,7 +18,7 @@
             android:icon="@drawable/ic_help" />
 
     </group>
-    <group android:checkableBehavior="single">
+    <group >
 
         <item
             android:id="@+id/nav_logout"

@@ -5,12 +5,15 @@ import static com.google.android.material.color.utilities.MaterialDynamicColors.
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,6 +42,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+
         ActionBar actionBar = getSupportActionBar(); // Obtain a reference to the action bar
         if (actionBar != null) {
             actionBar.hide(); // Hide the action bar
@@ -59,6 +64,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     public void login(View v){
+        if(NetworkUtils.isInternetIsConnected(this)==false){
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
         try {
         psswd=password.getText().toString();
          eml=email.getText().toString();
@@ -67,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
          auth.signInWithEmailAndPassword(eml,psswd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
              @Override
              public void onComplete(@NonNull Task<AuthResult> task) {
+
                  if(task.isSuccessful()){
                      Intent intent=new Intent(LoginActivity .this,Home.class);
                      Toast.makeText(LoginActivity.this, "login successfully", Toast.LENGTH_SHORT).show();
@@ -74,24 +84,16 @@ public class LoginActivity extends AppCompatActivity {
                      SharedPreferences.Editor editor=preferences.edit();
                      FirebaseUser user=auth.getCurrentUser();
                      String MainDatabase_name="User"+user.getUid();
-                     editor.putBoolean(SignUpActivity.IS_LOGGED,true);
-                     editor.putString("login_password",psswd);
-                     editor.putString("login_email",eml);
-                     editor.putString(SignUpActivity.MAIN_DATABASE_NAME,MainDatabase_name);
-                     editor.commit();
-                     DatabaseReference reference= FirebaseDatabase.getInstance().getReference(MainDatabase_name);
-                     reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                     DatabaseReference ref=FirebaseDatabase.getInstance().getReference()
+                             .child(MainDatabase_name).child("Userdata-1").child("name");
+                     ref.addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(@NonNull DataSnapshot snapshot) {
-                             for (DataSnapshot data:snapshot.getChildren()){
-                                 if(data.getKey()=="Userdata-1"){
-                                     SharedPreferences preferences=getSharedPreferences(SignUpActivity.APP_LOGIN,MODE_PRIVATE);
-                                     SharedPreferences.Editor editor=preferences.edit();
-                                     editor.putString("login_name",data.child("name").getValue(String.class));
-                                     editor.commit();
-                                     break;
-                                 }
-                             }
+                            String name=snapshot.getValue(String.class);
+                             SharedPreferences preferences=getSharedPreferences(SignUpActivity.APP_LOGIN,MODE_PRIVATE);
+                             SharedPreferences.Editor editor=preferences.edit();
+                             editor.putString("login_name",name);
+                             editor.commit();
                          }
 
                          @Override
@@ -100,11 +102,16 @@ public class LoginActivity extends AppCompatActivity {
                          }
                      });
 
+                     editor.putBoolean(SignUpActivity.IS_LOGGED,true);
+                     editor.putString("login_password",psswd);
+                     editor.putString("login_email",eml);
+                     editor.putString(SignUpActivity.MAIN_DATABASE_NAME,MainDatabase_name);
+                     editor.commit();
                      startActivity(intent);
                      finish();
                  }else{
                      String errorMessage = task.getException().getMessage();
-                     Toast.makeText(LoginActivity.this, "login failed: " + errorMessage, Toast.LENGTH_LONG).show();
+                     Toast.makeText(LoginActivity.this, "login failed: " + errorMessage, Toast.LENGTH_SHORT).show();
                  }
              }
          });
