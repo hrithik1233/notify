@@ -98,12 +98,13 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
     @SuppressLint({"MissingInflatedId", "RestrictedApi", "NotifyDataSetChanged"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try{
+        super.onCreate(savedInstanceState);
+        try {
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         }catch (Exception e){
-            Log.i("dubugg",e.getMessage());
+            Log.i("test",e.getMessage());
         }
-        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_add_data_main_page);
 
         SharedPreferences preferences = getSharedPreferences(APP_LOGIN, MODE_PRIVATE);
@@ -237,6 +238,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                         if (res) {
 
                             arrayList.add(data);
+                            adapter.notifyDataSetChanged();
                             adapter.notifyDataSetChanged();
                             dialog.dismiss();
                         }
@@ -387,7 +389,6 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                     editSave.putString("messageBody", Main_message);
                     editSave.apply();
                 }
-
                 if (isBothWhatsappAndSMS) {
                     isWhatsapp = true;
                     isSMS = true;
@@ -558,21 +559,24 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
 
     @Override
     public void onTouchDelete(int pos) {
+        try {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialogTheme));
         builder.setTitle("Delete student").setMessage("Do you want to delete?").setPositiveButton("Yes", (dialogInterface, i) -> {
-            Toast.makeText(AddDataMainPage.this, Integer.toString(arrayList.get(pos).getId()), Toast.LENGTH_SHORT).show();
             Boolean res = db.delete(dataBaseName, Integer.toString(arrayList.get(pos).getId()));
             if (res) {
-
                 String tmp = arrayList.get(pos).getStdnt_name();
-                arrayList.remove(pos);
-                adapter.notifyDataSetChanged();
                 reference.child("studentdata").child(arrayList.get(pos).getId()+"").removeValue();
+                arrayList.remove(pos);
+                intialise();
+
                 Toast.makeText(AddDataMainPage.this, tmp + " deleted", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(AddDataMainPage.this, "item not deleted", Toast.LENGTH_SHORT).show();
             }
         }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss()).show();
+        }catch (Exception e){
+            Log.i("test",e.getMessage());
+        }
     }
 
 
@@ -654,7 +658,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                     if (res) {
                         dialog.dismiss();
                         reference.child("studentdata").child(arrayList.get(pos).getId()+"").setValue(data);
-                        adapter.notifyDataSetChanged();
+                        intialise();
                         Toast.makeText(AddDataMainPage.this, "Updated successfully", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -713,22 +717,43 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
             selectdelete.setVisibility(View.INVISIBLE);
             selected.clear();
             arrayList.clear();
-//            Cursor cursor = db.fetch(dataBaseName);
-//            if (cursor != null && cursor.moveToNext()) {
-//                Log.i("test",cursor.getCount()+"number of otems");
-//                do {
-//                    StudentData data = new StudentData(cursor.getInt(0),
-//                            cursor.getString(1), cursor.getString(2)
-//                            , cursor.getInt(3), cursor.getString(4)
-//                            , cursor.getString(5)
-//                            , cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getInt(9), cursor.getString(10), cursor.getString(11));
-//                    arrayList.add(data);
-//                } while (cursor.moveToNext());
-//
-//                adapter.notifyDataSetChanged();
-//            }else
+            Cursor cursor = db.fetch(dataBaseName);
+            if (cursor != null && cursor.moveToNext()) {
+                Log.i("test",cursor.getCount()+"number of otems");
+                do {
+                    StudentData data = new StudentData(cursor.getInt(0),
+                            cursor.getString(1), cursor.getString(2)
+                            , cursor.getInt(3), cursor.getString(4)
+                            , cursor.getString(5)
+                            , cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getInt(9), cursor.getString(10), cursor.getString(11));
+                    arrayList.add(data);
+                } while (cursor.moveToNext());
 
-            {
+                adapter.notifyDataSetChanged();
+            }
+            if(arrayList.size()==0){
+
+               intialiseWithdatabase();
+            }
+
+            numberOfStudentsTextView.setText("No of std : " + arrayList.size());
+            if (selected.size() == 0) {
+                no_ofselected.setVisibility(View.INVISIBLE);
+            } else {
+                no_ofselected.setVisibility(View.VISIBLE);
+                no_ofselected.setText("No of selected: " + selected.size());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i("test",e.getMessage());
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void intialiseWithdatabase() {
+
+               try{
                   if (!NetworkUtils.isInternetIsConnected(this)) {
                       throw new Exception("offline unable to connect");
                   }else{
@@ -738,7 +763,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                       progressDialog.setCancelable(true);
                      progressDialog.show();
                       new Handler().postDelayed(progressDialog::dismiss,800);
-                          firebase.addValueEventListener(new ValueEventListener() {
+                          firebase.addListenerForSingleValueEvent(new ValueEventListener() {
                               @SuppressLint("NotifyDataSetChanged")
                               @Override
                               public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -751,7 +776,6 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                                           Toast.makeText(AddDataMainPage.this, dt.getStdnt_name(), Toast.LENGTH_SHORT).show();
                                           arrayList.add(dt);
                                           db.insert(dataBaseName, dt);
-
                                           Toast.makeText(AddDataMainPage.this, dt.getId()+"", Toast.LENGTH_SHORT).show();
                                       }
                                   }
@@ -769,24 +793,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                   }
 
 
-            }
-
-            //  Toast.makeText(this, arrayList.size()+"", Toast.LENGTH_SHORT).show();
-
-
-            numberOfStudentsTextView.setText("No of std : " + arrayList.size());
-            if (selected.size() == 0) {
-                no_ofselected.setVisibility(View.INVISIBLE);
-            } else {
-                no_ofselected.setVisibility(View.VISIBLE);
-                no_ofselected.setText("No of selected: " + selected.size());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i("test",e.getMessage());
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-
+            } catch (Exception e){}
     }
 
     public static boolean validAge(int age) {
@@ -809,22 +816,21 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                         for (int j = 0; j < selected.size(); j++) {
                             boolean res = db.delete(dataBaseName, Integer.toString(selected.get(j).getId()));
-                            reference.child("studentdata").child(Integer.toString(selected.get(j).getId())).
-                          removeValue().addOnCompleteListener(
-                                    task -> Toast.makeText(AddDataMainPage.this, "successful", Toast.LENGTH_SHORT).show());
-
                             if (res) {
+                                reference.child("studentdata").child(Integer.toString(selected.get(j).getId())).
+                                        removeValue();
                                 count++;
                             }
                         }
                         Toast.makeText(AddDataMainPage.this, "" + count + " items deleted", Toast.LENGTH_SHORT).show();
 
-                       adapter.notifyDataSetChanged();
+                       intialise();
                         selectdelete.setVisibility(View.INVISIBLE);
                     }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss()).show();
 
+
         });
-      adapter.notifyDataSetChanged();
+
     }
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")

@@ -44,6 +44,8 @@ public class DatabaseBatch extends SQLiteOpenHelper {
         }catch (Exception e){}
         return res!=-1;
     }
+
+
     public Cursor fetch(){
         SQLiteDatabase database=this.getReadableDatabase();
         return database.query(TABLE_NAME,new String[]{BATCH_NAME,BATCH_YEAR},null, null,null,null,null);

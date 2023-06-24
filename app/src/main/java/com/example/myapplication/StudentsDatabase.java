@@ -39,6 +39,12 @@ public class StudentsDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
+
+    public void renameTable(String TABLE_NAME,String NEW_TABLE_NAME){
+        SQLiteDatabase db=this.getWritableDatabase();
+      db.execSQL("ALTER TABLE "+TABLE_NAME+" RENAME TO "+NEW_TABLE_NAME+";");
+
+    }
     public void createtabel(String TABLE_NAME){
         SQLiteDatabase db=this.getWritableDatabase();
         String table="create table if not exists "+TABLE_NAME+" ( "+STUDENT_ID+" integer primary key autoincrement,"

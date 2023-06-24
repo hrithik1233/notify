@@ -25,6 +25,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -67,6 +68,7 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
     Dialog navManu;
     String databaseMain = "";
 
+
     HomeFilesAdapter homeFilesAdapter;
 
     String Mytoken;
@@ -75,7 +77,7 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
     @SuppressLint({"MissingInflatedId", "RtlHardcoded"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+     FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -363,9 +365,9 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
         Dialog dialog1 = new Dialog(this);
         dialog1.setContentView(R.layout.batchclickoption);
         dialog1.show();
-        Button bt1 = dialog1.findViewById(R.id.renamebatch);
+        Button renameBatch = dialog1.findViewById(R.id.renamebatch);
         Button bt2 = dialog1.findViewById(R.id.deletebatch);
-        bt1.setOnClickListener(view -> {
+        renameBatch.setOnClickListener(view -> {
             Dialog dlog = new Dialog(Home.this);
             dlog.setContentView(R.layout.rename_batch);
             dlog.show();
@@ -379,10 +381,53 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                 String n1 = name.getText().toString();
                 String yr = year.getText().toString();
                 Homefiles hf = new Homefiles(n1, yr);
+                DatabaseReference renamedBatch=FirebaseDatabase.getInstance().getReference(databaseMain);
+
                 Boolean res = databaseBatch.update(arrayList.get(position), hf);
                 if (res) {
+                    try {
+                    DatabaseReference ref= FirebaseDatabase.getInstance().getReference(databaseMain).child(arrayList.get(position).getTable_Name());
+
+                       ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                           @Override
+                           public void onDataChange(@NonNull DataSnapshot snapshot) {
+                               ArrayList<StudentData> dt=new ArrayList<>();
+                               Homefiles batchdata;
+                               for(DataSnapshot data:snapshot.getChildren()){
+                                   Log.i("test",data.getKey());
+                                   if(data.getKey().equals("batchdata")){
+                                       batchdata=data.getValue(Homefiles.class);
+                                   }
+                                   if(Objects.equals(data.getKey(), "Userdata-1")){
+                                       DateAndTime dateAndTime=data.child("dateAndTime").getValue(DateAndTime.class);
+                                       String username=data.child("name").getValue(String.class);
+                                       String userEmail=data.child("email").getValue(String.class);
+                                       Toast.makeText(Home.this, "found", Toast.LENGTH_SHORT).show();
+                                       renamedBatch.child(hf.getTable_Name()).child("Userdata-1").child("name").setValue(username);
+                                       renamedBatch.child(hf.getTable_Name()).child("Userdata-1").child("email").setValue(userEmail);
+                                       renamedBatch.child(hf.getTable_Name()).child("Userdata-1").child("dateAndTime").setValue(dateAndTime);
+
+                                   }
+                               }
+
+                           }
+
+                           @Override
+                           public void onCancelled(@NonNull DatabaseError error) {
+
+                           }
+                       });
+                        StudentsDatabase db=new StudentsDatabase(this);
+                        db.renameTable( arrayList.get(position).getTable_Name(),n1);
+                    }catch (Exception e){
+
+                        Log.i("test",e.getMessage());
+                    }
+
                     arrayList.get(position).setYear(yr);
                     arrayList.get(position).setBatch(n1);
+
+
                 } else {
                     Toast.makeText(Home.this, "Reanme unsuccesfull", Toast.LENGTH_SHORT).show();
                 }
@@ -409,9 +454,7 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                         Boolean res = databaseBatch.delete(arrayList.get(position));
                         StudentsDatabase db = new StudentsDatabase(Home.this);
                         db.dropTable(tableName);
-                        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference(databaseMain);
                         Toast.makeText(Home.this, databaseMain, Toast.LENGTH_SHORT).show();
-                        firebase.child(tableName).removeValue();
                         firebase = FirebaseDatabase.getInstance().getReference(databaseMain);
                         firebase.child(tableName).removeValue();
                         if (res) {
