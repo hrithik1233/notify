@@ -95,6 +95,7 @@ public class SignUpActivity extends AppCompatActivity {
                     firebaseIntailization();
                     startActivity(intent);
                     finish();
+
                 }else{
                     String errorMessage = task.getException().getMessage();
                     Toast.makeText(SignUpActivity .this, "Sign up failed: " + errorMessage, Toast.LENGTH_LONG).show();
@@ -146,7 +147,10 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-
-
-
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this,LoginActivity.class));
+        finish();
+        super.onBackPressed();
+    }
 }

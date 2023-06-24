@@ -15,6 +15,7 @@
     <color name="NOT_SELECTED_DEFAULT">#CFC0F3</color>
     <color name="gray_light">#9E9A9A</color>
     <color name="purple">#CFC0F3</color>
+    <color name="noteColour">#323131</color>
 
 
 </resources>

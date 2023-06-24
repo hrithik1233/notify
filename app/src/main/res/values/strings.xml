@@ -16,6 +16,23 @@
     <string name="batch_year">Batch year...</string>
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
+    <string name="NotificationChannelId">NotificationId</string>
     <string name="batch_namehint">Batch Name...</string>
     <string name="create_batch">CREATE BATCH</string>
+    <string name="parent_message">Hey Parent,\n Just wanted to reach out and share an important concern regarding your child\'s punctuality in college. It seems they\'ve been consistently arriving late to their classes, and we thought you should know. Being on time is a valuable skill that greatly impacts their academic journey.\n Thanks for your understanding and support! Best regards,</string>
+    <string name="variable_declaration">parentname              :{parentname}\nstudentname             :{studentname}\nstudentgender           :{gender}\ndate                    :{dateset}\ntime                    :{timeset}\nstudentname/parentname  :{p/s}\n\n(p/s-When student and parent selected)\nUsing variable values are assigned automatically to each corressponding moblie number.</string>
+    <string name="student_gender">Student Gender :</string>
+    <string name="set_result_configuration">Set result configuration</string>
+    <string name="paste_result_site_address_here">Paste result site address here...</string>
+    <string name="set_result_mode">Set result mode</string>
+    <string name="enter_a_pin">Enter a Pin:</string>
+    <string name="batch_request_discription">Your request will be send to the matching constrain your entered, once the owner approved, data will be automatically added to your selected batch.</string>
+    <string name="upload_discription">You can set a name and pin so that you can share the data between people\n\n(Note:Data can be confidential, do you it on your own responssiblity)</string>
+    <string name="get_data">Get data</string>
+    <string name="batchname_of_approver">Batchname of approver</string>
+    <string name="enter_a_name">Enter a name</string>
+    <string name="enter_the_pin">Enter the pin</string>
+    <string name="enter_the_name">Enter the name</string>
+    <string name="save_prefrence">Save prefrence</string>
+    <string name="send_message">Send Message</string>
 </resources>

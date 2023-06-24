@@ -92,7 +92,7 @@ public class StudentData {
     String Address;
 
     public StudentData(int id,String stdnt_name, String std_gender, int stdnt_age, String stdnt_dprtmnt,
-                       String stdnt_mobileNo, String parent_name, String parent_no, String address,int number_of_late_comes,String adhar) {
+                       String stdnt_mobileNo, String parent_name, String parent_no, String address,int number_of_late_comes,String adhar,String regno) {
         this.stdnt_name = stdnt_name;
         this.std_gender = std_gender;
         this.stdnt_age = stdnt_age;
@@ -100,6 +100,7 @@ public class StudentData {
         this.stdnt_mobileNo = stdnt_mobileNo;
         this.parent_name = parent_name;
         this.parent_no = parent_no;
+        this.std_register_no=regno;
         Address = address;
      this.id=id;
         this.number_of_late_comes=number_of_late_comes;
@@ -107,7 +108,7 @@ public class StudentData {
 
     }
     public StudentData(String stdnt_name, String std_gender, int stdnt_age, String stdnt_dprtmnt,
-                       String stdnt_mobileNo, String parent_name, String parent_no, String address,int number_of_late_comes,String aadhar) {
+                       String stdnt_mobileNo, String parent_name, String parent_no, String address,int number_of_late_comes,String aadhar,String regno) {
         this.stdnt_name = stdnt_name;
         this.std_gender = std_gender;
         this.stdnt_age = stdnt_age;
@@ -117,6 +118,7 @@ public class StudentData {
         this.parent_no = parent_no;
         Address = address;
         aadhar_no=aadhar;
+        std_register_no=regno;
         this.number_of_late_comes=number_of_late_comes;
     }
 

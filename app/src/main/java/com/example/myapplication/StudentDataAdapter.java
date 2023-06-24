@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,7 +76,7 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
                 @Override
                 public void onClick(View view) {
                     if(responseInterface1!=null){
-                        int pos=getAdapterPosition();
+                        int pos=getBindingAdapterPosition();
                         if(pos!=RecyclerView.NO_POSITION){
                             responseInterface1.onTouchDelete(pos);
 
@@ -91,7 +90,7 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
                 @Override
                 public void onClick(View view) {
                     if(responseInterface1!=null){
-                        int pos=getAdapterPosition();
+                        int pos=getBindingAdapterPosition();
                         if(pos!=RecyclerView.NO_POSITION){
                             Toast.makeText(context,"No of time inspected: " +arrayList.get(pos).getNumber_of_late_comes(), Toast.LENGTH_SHORT).show();
 
@@ -103,7 +102,7 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
                 @Override
                 public void onClick(View view) {
                     if(responseInterface1!=null){
-                        int pos=getAdapterPosition();
+                        int pos=getBindingAdapterPosition();
                         if(pos!=RecyclerView.NO_POSITION){
                             responseInterface1.onTouchEdit(pos);
 
@@ -116,16 +115,15 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
                 @Override
                 public boolean onLongClick(View view) {
                     if(responseInterface1!=null){
-                        int pos=getAdapterPosition();
+                        int pos=getBindingAdapterPosition();
                         if(pos!=RecyclerView.NO_POSITION){
-                            if(isSelectMode==false&&selectedList.size()==0){
+                            if(!isSelectMode &&selectedList.size()==0){
                                 selectedList.add(arrayList.get(pos));
                                 relativeLayout.setBackgroundResource(R.color.SELECTED);
                                 arrayList.get(pos).setIsselected(true);
                                 isSelectMode=true;
                                 count++;
                             }
-
 
                             responseInterface1.onLongpress(pos,selectedList);
 
@@ -140,7 +138,7 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
                 @Override
                 public void onClick(View view) {
                     if(responseInterface1!=null){
-                        int pos=getAdapterPosition();
+                        int pos=getBindingAdapterPosition();
                         if(pos!=RecyclerView.NO_POSITION){
 
                             if(isSelectMode){
@@ -170,13 +168,17 @@ public class StudentDataAdapter extends RecyclerView.Adapter<StudentDataAdapter.
     }
     public  void filter(ArrayList<StudentData> dt){
         arrayList=dt;
-        for(int i=0;i<arrayList.size();i++){
-            if(arrayList.get(i).isSelected){
 
-            }
-
-        }
         notifyDataSetChanged();
     }
+    public void setSelctionMode(boolean selection){
+        isSelectMode=selection;
+        if(!selection){
+            selectedList.clear();
+        }
+
+    }
+
+
 
 }

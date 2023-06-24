@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +21,13 @@ public class WhatsappService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         // Handle accessibility events here
         // For example, perform automatic clicks when certain conditions are met
-        performAutomaticClicks(event);
+        if(isAppInForeground()){
+            performAutomaticClicks(event);
+        }
+
+
+
+
     }
 
 
@@ -64,7 +71,10 @@ public class WhatsappService extends AccessibilityService {
                 if (!sendButtonNodes.isEmpty()) {
                     AccessibilityNodeInfo sendButtonNode = sendButtonNodes.get(0);
                     sendButtonNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                }else Toast.makeText(this, "err", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(this, "err", Toast.LENGTH_SHORT).show();
+                    stopSelf();
+                }
 
 
 
@@ -81,5 +91,27 @@ public class WhatsappService extends AccessibilityService {
     @Override
     public void onInterrupt() {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        stopSelf();
+        super.onDestroy();
+    }
+
+
+
+    private boolean isAppInForeground() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(1);
+
+        if (runningTasks != null && runningTasks.size() > 0) {
+            ComponentName topActivity = runningTasks.get(0).topActivity;
+            String packageName = getPackageName();
+
+            return topActivity != null && topActivity.getPackageName().equals(packageName);
+        }
+
+        return false;
     }
 }

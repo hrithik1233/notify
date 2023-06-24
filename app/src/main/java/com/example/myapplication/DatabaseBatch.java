@@ -46,9 +46,7 @@ public class DatabaseBatch extends SQLiteOpenHelper {
     }
     public Cursor fetch(){
         SQLiteDatabase database=this.getReadableDatabase();
-        Cursor cursor=database.query(TABLE_NAME,new String[]{BATCH_NAME,BATCH_YEAR},null,
-                null,null,null,null);
-        return cursor;
+        return database.query(TABLE_NAME,new String[]{BATCH_NAME,BATCH_YEAR},null, null,null,null,null);
     }
     public  Boolean delete(Homefiles hf){
         long res = 0;

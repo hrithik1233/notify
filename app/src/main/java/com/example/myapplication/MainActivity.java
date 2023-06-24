@@ -5,6 +5,8 @@ import static com.example.myapplication.SignUpActivity.APP_LOGIN;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.audiofx.Equalizer;
@@ -37,8 +39,20 @@ public class MainActivity extends AppCompatActivity {
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
-        Handler handler=new Handler();
-      handler.postDelayed(new Runnable() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence channelName = "MyChannel";
+            String channelDescription = "My Channel Description";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+
+            NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.NotificationChannelId), channelName, importance);
+            channel.setDescription(channelDescription);
+
+            NotificationManager notificationManager = getApplicationContext().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        new Handler().postDelayed(new Runnable() {
           @Override
           public void run() {
               FirebaseUser user=auth.getCurrentUser();

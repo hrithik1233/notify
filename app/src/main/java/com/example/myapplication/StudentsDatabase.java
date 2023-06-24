@@ -1,11 +1,13 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -30,7 +32,7 @@ public class StudentsDatabase extends SQLiteOpenHelper {
     public static  final   String STUDENT_PARENT_MOBILE_NO = "student_parent_mobile_no";
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        db.close();
     }
 
     @Override
@@ -46,6 +48,7 @@ public class StudentsDatabase extends SQLiteOpenHelper {
                 +STUDENT_PARENT_NAME+" text,"+STUDENT_PARENT_MOBILE_NO
                 +" text,"+STUDENT_ADDRESS+" text,"+NO_OF_LATE_COMES +" integer,"+STUDENT_AADHAR_NO+" text);";
         db.execSQL(table);
+        db.close();
     }
     public Boolean insert(String TABLE_NAME,StudentData sd){
         SQLiteDatabase db=this.getWritableDatabase();
@@ -65,19 +68,37 @@ public class StudentsDatabase extends SQLiteOpenHelper {
         cv.put(NO_OF_LATE_COMES,sd.getNumber_of_late_comes());
         cv.put(STUDENT_AADHAR_NO,sd.getAadhar_no());
         res=db.insert(TABLE_NAME,null,cv);
-        }catch (Exception e){}
-
+        }catch (Exception e){
+            Log.i("test",e.toString());
+        }
+ db.close();
     return res!=-1;
 
     }
     public Cursor fetch(String TABLE_NAME){
    SQLiteDatabase db=this.getReadableDatabase();
-   Cursor cursor=db.query(TABLE_NAME,new String[]{STUDENT_ID,STUDENT_NAME,STUDENT_GENDER,STUDENT_AGE,STUDENT_DEPARTMENT,
-           STUDENT_MOBILE_NO,STUDENT_PARENT_NAME,STUDENT_PARENT_MOBILE_NO,STUDENT_ADDRESS,NO_OF_LATE_COMES,STUDENT_AADHAR_NO},
-           null,null,null,null,NO_OF_LATE_COMES+" DESC");
-
-   return cursor;
+        Cursor cursor= db.query(TABLE_NAME,new String[]{STUDENT_ID,STUDENT_NAME,STUDENT_GENDER,STUDENT_AGE,STUDENT_DEPARTMENT,
+                STUDENT_MOBILE_NO,STUDENT_PARENT_NAME,STUDENT_PARENT_MOBILE_NO,STUDENT_ADDRESS,NO_OF_LATE_COMES,STUDENT_AADHAR_NO,STUDENT_REGISTER_NO},
+                null,null,null,null,NO_OF_LATE_COMES+" DESC");
+        Log.i("test","items count in cursor "+cursor.getCount());
+        db.close();
+        return cursor;
     }
+    @SuppressLint("Range")
+    public int getIDofStudent(String TABLE_NAME){
+        SQLiteDatabase db=this.getReadableDatabase();
+        @SuppressLint("Recycle")
+        Cursor cursor=db.query(TABLE_NAME,new String[]{STUDENT_ID},
+                null,null,null,null,STUDENT_ID+" DESC");
+
+       int res=-1;
+       if(cursor!=null&& cursor.moveToNext()) {
+           res=cursor.getInt(0);
+       }
+        db.close();
+       return res;
+    }
+
   public Boolean update(String TABLE_NAME,StudentData sd){
       ContentValues cv=new ContentValues();
       cv.put(STUDENT_NAME,sd.getStdnt_name());
@@ -106,5 +127,7 @@ public class StudentsDatabase extends SQLiteOpenHelper {
   public void dropTable(String table){
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL("drop table if exists "+table);
+      db.close();
   }
+
 }

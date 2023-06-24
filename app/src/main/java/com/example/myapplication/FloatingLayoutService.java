@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FloatingLayoutService extends Service {
@@ -37,6 +39,7 @@ public class FloatingLayoutService extends Service {
     ImageView imageView, close;
     TextView textView;
     String[] numbers;
+   ArrayList<DataIntentShare> share;
     String message="";
     int width;
 
@@ -52,14 +55,8 @@ public class FloatingLayoutService extends Service {
             Toast.makeText(this, "empty", Toast.LENGTH_SHORT).show();
             return START_NOT_STICKY;
         }else{
-            String val=intent.getStringExtra("message");
-            message=val;
-           numbers=intent.getStringArrayExtra("Numbers");
-            Log.d("test",numbers[0]);
-            Log.d("test",val);
-         len=numbers.length;
-            Toast.makeText(this, numbers[0], Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, val, Toast.LENGTH_SHORT).show();
+            share=intent.getParcelableArrayListExtra("array");
+            len=share.size();
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -177,11 +174,12 @@ public class FloatingLayoutService extends Service {
 
                     @Override
                     public void onClick(View view) {
-
+                        Log.d("size",share.size()+"");
 
                            if(s<len){
-                               String contact = numbers[s];
-                               Log.d("tets1",numbers[s]);
+                               String contact = share.get(s).getNumber();
+                               String message=share.get(s).getMessage();
+                               Log.d("size",share.size()+"");
                                Intent whts = new Intent(Intent.ACTION_VIEW);
                                whts.setPackage("com.whatsapp");
                                Toast.makeText(FloatingLayoutService.this, s+"", Toast.LENGTH_SHORT).show();

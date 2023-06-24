@@ -134,6 +134,7 @@ public class LoginActivity extends AppCompatActivity {
     public void signUp(View v){
         Intent intent=new Intent(this,SignUpActivity.class);
         startActivity(intent);
+        finish();
         Toast.makeText(this, "sign up", Toast.LENGTH_SHORT).show();
 
     }

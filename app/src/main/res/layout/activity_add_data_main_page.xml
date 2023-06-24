@@ -153,6 +153,13 @@
                android:layout_weight="1"
 
                />
+
+           <View
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+
+               />
            <com.google.android.material.floatingactionbutton.FloatingActionButton
                android:id="@+id/floatingActionButtonedit"
                android:layout_width="wrap_content"
