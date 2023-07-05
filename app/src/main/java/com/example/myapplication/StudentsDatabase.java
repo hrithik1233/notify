@@ -54,13 +54,11 @@ public class StudentsDatabase extends SQLiteOpenHelper {
                 +STUDENT_PARENT_NAME+" text,"+STUDENT_PARENT_MOBILE_NO
                 +" text,"+STUDENT_ADDRESS+" text,"+NO_OF_LATE_COMES +" integer,"+STUDENT_AADHAR_NO+" text);";
         db.execSQL(table);
-        db.close();
     }
     public Boolean insert(String TABLE_NAME,StudentData sd){
         SQLiteDatabase db=this.getWritableDatabase();
         long res=-1;
         try {
-
         ContentValues cv=new ContentValues();
         cv.put(STUDENT_NAME,sd.getStdnt_name());
         cv.put(STUDENT_AGE,sd.getStdnt_age());
@@ -77,7 +75,6 @@ public class StudentsDatabase extends SQLiteOpenHelper {
         }catch (Exception e){
             Log.i("test",e.toString());
         }
- db.close();
     return res!=-1;
 
     }
@@ -87,7 +84,6 @@ public class StudentsDatabase extends SQLiteOpenHelper {
                 STUDENT_MOBILE_NO,STUDENT_PARENT_NAME,STUDENT_PARENT_MOBILE_NO,STUDENT_ADDRESS,NO_OF_LATE_COMES,STUDENT_AADHAR_NO,STUDENT_REGISTER_NO},
                 null,null,null,null,NO_OF_LATE_COMES+" DESC");
         Log.i("test","items count in cursor "+cursor.getCount());
-        db.close();
         return cursor;
     }
     @SuppressLint("Range")
@@ -101,7 +97,6 @@ public class StudentsDatabase extends SQLiteOpenHelper {
        if(cursor!=null&& cursor.moveToNext()) {
            res=cursor.getInt(0);
        }
-        db.close();
        return res;
     }
 
@@ -120,20 +115,18 @@ public class StudentsDatabase extends SQLiteOpenHelper {
       cv.put(STUDENT_AADHAR_NO,sd.getAadhar_no());
       SQLiteDatabase db=this.getWritableDatabase();
       long res=db.update(TABLE_NAME,cv,STUDENT_ID+"=?",new String[]{Integer.toString(sd.getId())});
-      db.close();
       return res!=-1;
   }
   public Boolean delete(String TABLE_NAME,String id){
       SQLiteDatabase db=this.getWritableDatabase();
      long res= db.delete(TABLE_NAME,STUDENT_ID+"=?",new String[]{id});
-      db.close();
       return res!=-1;
   }
 
   public void dropTable(String table){
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL("drop table if exists "+table);
-      db.close();
   }
+
 
 }

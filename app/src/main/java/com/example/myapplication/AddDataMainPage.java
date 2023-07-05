@@ -1000,6 +1000,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
             arrayList.get(i).setIsselected(false);
             firebase.child("studentdata").child(arrayList.get(i).getId() + "").setValue(arrayList.get(i));
         }
+        db.close();
         super.onDestroy();
     }
 

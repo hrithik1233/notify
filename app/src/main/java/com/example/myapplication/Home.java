@@ -22,6 +22,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;;
@@ -77,9 +78,11 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
     @SuppressLint({"MissingInflatedId", "RtlHardcoded"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-     FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        try {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        }catch (Exception e){}
 
         recievedMessages=new ArrayList<>();
 
@@ -130,17 +133,26 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
         String password = preferences.getString("login_password", "");
         SharedPreferences pre = getSharedPreferences(APP_LOGIN, MODE_PRIVATE);
 
-        new Handler().postDelayed(() -> {
-            if (!pre.getBoolean("isaccessed", true)) {
-                Intent acc = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                acc.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(acc);
-                SharedPreferences.Editor editor = pre.edit();
-                editor.putBoolean("isaccessed", true);
-                editor.apply();
-            }
 
-        }, 3000);
+            if (!pre.getBoolean("isaccessed", true)) {
+                AlertDialog.Builder AcceDialog=new AlertDialog.Builder(new ContextThemeWrapper(Home.this, R.style.CustomAlertDialogTheme));
+                AcceDialog.setCancelable(false);
+                AcceDialog.setMessage("Allow accessiblity service for notify");
+                ImageView imgView=new ImageView(this);
+                imgView.setImageResource(R.drawable.accessiblity_serivice_image1g);
+                AcceDialog.setView(imgView);
+                AcceDialog.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent acc = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                        acc.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(acc);
+                        SharedPreferences.Editor editor = pre.edit();
+                        editor.putBoolean("isaccessed", true);
+                        editor.apply();
+                    }
+                });
+            }
 
         recyclerView = findViewById(R.id.batch_recycler);
         arrayList = new ArrayList<>();
@@ -447,26 +459,34 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
         });
         bt2.setOnClickListener(view -> {
             AlertDialog.Builder deletealert = new AlertDialog.Builder(new ContextThemeWrapper(Home.this, R.style.CustomAlertDialogTheme));
-            deletealert.setTitle("Delete Batch").setMessage("Do you want to delete this Batch").setCancelable(true)
-                    .setPositiveButton("Yes", (dialogInterface, i) -> {
-                        String temp = arrayList.get(position).getBatch();
-                        String tableName = arrayList.get(position).getTable_Name();
-                        Boolean res = databaseBatch.delete(arrayList.get(position));
-                        StudentsDatabase db = new StudentsDatabase(Home.this);
-                        db.dropTable(tableName);
-                        Toast.makeText(Home.this, databaseMain, Toast.LENGTH_SHORT).show();
-                        firebase = FirebaseDatabase.getInstance().getReference(databaseMain);
-                        firebase.child(tableName).removeValue();
-                        if (res) {
-                            arrayList.remove(position);
-                            homeFilesAdapter.notifyDataSetChanged();
-                            Toast.makeText(Home.this, temp + " successfully removed", Toast.LENGTH_SHORT).show();
-                        }
-                        dialog1.cancel();
-                    }).setNegativeButton("No", (dialogInterface, i) -> {
-                        dialogInterface.cancel();
-                        dialog1.cancel();
-                    }).show();
+
+                deletealert.setTitle("Delete Batch").setMessage("Do you want to delete this Batch").setCancelable(true)
+                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+                            try {
+                            String temp = arrayList.get(position).getBatch();
+                            String tableName = arrayList.get(position).getTable_Name();
+                            Boolean res = databaseBatch.delete(arrayList.get(position));
+                            StudentsDatabase db = new StudentsDatabase(Home.this);
+                            db.dropTable(tableName);
+                            Toast.makeText(Home.this, databaseMain, Toast.LENGTH_SHORT).show();
+                            firebase = FirebaseDatabase.getInstance().getReference(databaseMain);
+                            firebase.child(tableName).removeValue();
+
+                            if (res) {
+                                arrayList.remove(position);
+                                homeFilesAdapter.notifyDataSetChanged();
+                                Toast.makeText(Home.this, temp + " successfully removed", Toast.LENGTH_SHORT).show();
+                            }
+                            }catch (Exception e){
+                                Log.i("test","error"+e.getMessage());
+                            }
+                            dialog1.cancel();
+                        }).setNegativeButton("No", (dialogInterface, i) -> {
+                            dialogInterface.cancel();
+                            dialog1.cancel();
+                        }).show();
+
+
 
         });
     }
@@ -486,6 +506,7 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                 // Update UI here
             });
         });
+        databaseBatch.close();
         super.onDestroy();
     }
 

@@ -73,46 +73,43 @@ public class LoginActivity extends AppCompatActivity {
          eml=email.getText().toString();
         if(psswd.equals("")||eml.equals("")||eml.length()<8)
             throw new Exception();
-         auth.signInWithEmailAndPassword(eml,psswd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-             @Override
-             public void onComplete(@NonNull Task<AuthResult> task) {
+         auth.signInWithEmailAndPassword(eml,psswd).addOnCompleteListener(task -> {
 
-                 if(task.isSuccessful()){
-                     Intent intent=new Intent(LoginActivity .this,Home.class);
-                     Toast.makeText(LoginActivity.this, "login successfully", Toast.LENGTH_SHORT).show();
-                     SharedPreferences preferences=getSharedPreferences(SignUpActivity.APP_LOGIN,MODE_PRIVATE);
-                     SharedPreferences.Editor editor=preferences.edit();
-                     FirebaseUser user=auth.getCurrentUser();
-                     String MainDatabase_name="User"+user.getUid();
-                     DatabaseReference ref=FirebaseDatabase.getInstance().getReference()
-                             .child(MainDatabase_name).child("Userdata-1").child("name");
-                     ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                         @Override
-                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String name=snapshot.getValue(String.class);
-                             SharedPreferences preferences=getSharedPreferences(SignUpActivity.APP_LOGIN,MODE_PRIVATE);
-                             SharedPreferences.Editor editor=preferences.edit();
-                             editor.putString("login_name",name);
-                             editor.commit();
-                         }
+             if(task.isSuccessful()){
+                 Intent intent=new Intent(LoginActivity .this,Home.class);
+                 Toast.makeText(LoginActivity.this, "login successfully", Toast.LENGTH_SHORT).show();
+                 SharedPreferences preferences=getSharedPreferences(SignUpActivity.APP_LOGIN,MODE_PRIVATE);
+                 SharedPreferences.Editor editor=preferences.edit();
+                 FirebaseUser user=auth.getCurrentUser();
+                 String MainDatabase_name="User"+user.getUid();
+                 DatabaseReference ref=FirebaseDatabase.getInstance().getReference()
+                         .child(MainDatabase_name).child("Userdata-1").child("name");
+                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                     @Override
+                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String name=snapshot.getValue(String.class);
+                         SharedPreferences preferences=getSharedPreferences(SignUpActivity.APP_LOGIN,MODE_PRIVATE);
+                         SharedPreferences.Editor editor=preferences.edit();
+                         editor.putString("login_name",name);
+                         editor.commit();
+                     }
 
-                         @Override
-                         public void onCancelled(@NonNull DatabaseError error) {
+                     @Override
+                     public void onCancelled(@NonNull DatabaseError error) {
 
-                         }
-                     });
+                     }
+                 });
 
-                     editor.putBoolean(SignUpActivity.IS_LOGGED,true);
-                     editor.putString("login_password",psswd);
-                     editor.putString("login_email",eml);
-                     editor.putString(SignUpActivity.MAIN_DATABASE_NAME,MainDatabase_name);
-                     editor.commit();
-                     startActivity(intent);
-                     finish();
-                 }else{
-                     String errorMessage = task.getException().getMessage();
-                     Toast.makeText(LoginActivity.this, "login failed: " + errorMessage, Toast.LENGTH_SHORT).show();
-                 }
+                 editor.putBoolean(SignUpActivity.IS_LOGGED,true);
+                 editor.putString("login_password",psswd);
+                 editor.putString("login_email",eml);
+                 editor.putString(SignUpActivity.MAIN_DATABASE_NAME,MainDatabase_name);
+                 editor.commit();
+                 startActivity(intent);
+                 finish();
+             }else{
+                 String errorMessage = task.getException().getMessage();
+                 Toast.makeText(LoginActivity.this, "login failed: " + errorMessage, Toast.LENGTH_SHORT).show();
              }
          });
         }catch (Exception e){

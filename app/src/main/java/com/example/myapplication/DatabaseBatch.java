@@ -40,7 +40,7 @@ public class DatabaseBatch extends SQLiteOpenHelper {
                 new String[]{hf.getBatch(), hf.getYear()},null,null,null);
         if(cursor.moveToNext()) return false;
         res=database.insert(TABLE_NAME,null,cv);
-        database.close();
+
         }catch (Exception e){}
         return res!=-1;
     }
@@ -55,7 +55,7 @@ public class DatabaseBatch extends SQLiteOpenHelper {
         SQLiteDatabase database=this.getWritableDatabase();
         try{
              res=database.delete(TABLE_NAME,BATCH_NAME+"=? AND "+BATCH_YEAR+"=?",new String[]{hf.getBatch(), hf.getYear()});
-          database.close();
+
         }catch(Exception e){
     System.out.println(e);
         }
