@@ -1,11 +1,13 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -30,24 +32,33 @@ public class StudentsDatabase extends SQLiteOpenHelper {
     public static  final   String STUDENT_PARENT_MOBILE_NO = "student_parent_mobile_no";
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        db.close();
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
-    public Boolean insert(String TABLE_NAME,StudentData sd){
+
+    public void renameTable(String TABLE_NAME,String NEW_TABLE_NAME){
         SQLiteDatabase db=this.getWritableDatabase();
-        long res=-1;
-        try {
-      String table="create table if not exists "+TABLE_NAME+" ( "+STUDENT_ID+" integer primary key autoincrement,"
+      db.execSQL("ALTER TABLE "+TABLE_NAME+" RENAME TO "+NEW_TABLE_NAME+";");
+
+    }
+    public void createtabel(String TABLE_NAME){
+        SQLiteDatabase db=this.getWritableDatabase();
+        String table="create table if not exists "+TABLE_NAME+" ( "+STUDENT_ID+" integer primary key autoincrement,"
                 +STUDENT_NAME+" TEXT not null,"+STUDENT_AGE+" INTEGER,"
                 +STUDENT_DEPARTMENT+" text,"+STUDENT_GENDER+" TEXT,"
                 +STUDENT_MOBILE_NO+" text,"+STUDENT_REGISTER_NO+" text,"
                 +STUDENT_PARENT_NAME+" text,"+STUDENT_PARENT_MOBILE_NO
                 +" text,"+STUDENT_ADDRESS+" text,"+NO_OF_LATE_COMES +" integer,"+STUDENT_AADHAR_NO+" text);";
         db.execSQL(table);
+    }
+    public Boolean insert(String TABLE_NAME,StudentData sd){
+        SQLiteDatabase db=this.getWritableDatabase();
+        long res=-1;
+        try {
         ContentValues cv=new ContentValues();
         cv.put(STUDENT_NAME,sd.getStdnt_name());
         cv.put(STUDENT_AGE,sd.getStdnt_age());
@@ -61,19 +72,34 @@ public class StudentsDatabase extends SQLiteOpenHelper {
         cv.put(NO_OF_LATE_COMES,sd.getNumber_of_late_comes());
         cv.put(STUDENT_AADHAR_NO,sd.getAadhar_no());
         res=db.insert(TABLE_NAME,null,cv);
-        }catch (Exception e){}
-
+        }catch (Exception e){
+            Log.i("test",e.toString());
+        }
     return res!=-1;
 
     }
     public Cursor fetch(String TABLE_NAME){
    SQLiteDatabase db=this.getReadableDatabase();
-   Cursor cursor=db.query(TABLE_NAME,new String[]{STUDENT_ID,STUDENT_NAME,STUDENT_GENDER,STUDENT_AGE,STUDENT_DEPARTMENT,
-           STUDENT_MOBILE_NO,STUDENT_PARENT_NAME,STUDENT_PARENT_MOBILE_NO,STUDENT_ADDRESS,NO_OF_LATE_COMES,STUDENT_AADHAR_NO},
-           null,null,null,null,NO_OF_LATE_COMES+" DESC");
-
-   return cursor;
+        Cursor cursor= db.query(TABLE_NAME,new String[]{STUDENT_ID,STUDENT_NAME,STUDENT_GENDER,STUDENT_AGE,STUDENT_DEPARTMENT,
+                STUDENT_MOBILE_NO,STUDENT_PARENT_NAME,STUDENT_PARENT_MOBILE_NO,STUDENT_ADDRESS,NO_OF_LATE_COMES,STUDENT_AADHAR_NO,STUDENT_REGISTER_NO},
+                null,null,null,null,NO_OF_LATE_COMES+" DESC");
+        Log.i("test","items count in cursor "+cursor.getCount());
+        return cursor;
     }
+    @SuppressLint("Range")
+    public int getIDofStudent(String TABLE_NAME){
+        SQLiteDatabase db=this.getReadableDatabase();
+        @SuppressLint("Recycle")
+        Cursor cursor=db.query(TABLE_NAME,new String[]{STUDENT_ID},
+                null,null,null,null,STUDENT_ID+" DESC");
+
+       int res=-1;
+       if(cursor!=null&& cursor.moveToNext()) {
+           res=cursor.getInt(0);
+       }
+       return res;
+    }
+
   public Boolean update(String TABLE_NAME,StudentData sd){
       ContentValues cv=new ContentValues();
       cv.put(STUDENT_NAME,sd.getStdnt_name());
@@ -89,17 +115,18 @@ public class StudentsDatabase extends SQLiteOpenHelper {
       cv.put(STUDENT_AADHAR_NO,sd.getAadhar_no());
       SQLiteDatabase db=this.getWritableDatabase();
       long res=db.update(TABLE_NAME,cv,STUDENT_ID+"=?",new String[]{Integer.toString(sd.getId())});
-      db.close();
       return res!=-1;
   }
   public Boolean delete(String TABLE_NAME,String id){
       SQLiteDatabase db=this.getWritableDatabase();
      long res= db.delete(TABLE_NAME,STUDENT_ID+"=?",new String[]{id});
-      db.close();
       return res!=-1;
   }
+
   public void dropTable(String table){
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL("drop table if exists "+table);
   }
+
+
 }

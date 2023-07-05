@@ -4,64 +4,78 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-
+    android:background="#ffffff"
     tools:context=".Home">
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
+        android:clickable="true"
+        android:orientation="vertical"
+        android:focusable="true">
         <RelativeLayout
-            android:id="@+id/top"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
             android:background="@color/purple_700"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/animation_view"
+                android:layout_width="35dp"
+                android:layout_marginStart="10dp"
+                android:layout_height="wrap_content"
+                android:onClick="MenuBarClick"
+               android:scaleY="1.9"
+
+                android:scaleX="1.3"
+                app:lottie_rawRes="@raw/cross_nav" />
+            <ImageView
+                android:layout_height="10dp"
+                android:layout_width="10dp"
+                android:layout_alignEnd="@+id/animation_view"
+                android:id="@+id/notificationHighlightHome"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:background="@drawable/green_dot"
+                />
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:layout_centerVertical="true"
+                android:textSize="20sp"
+                android:layout_marginStart="10dp"
+                android:text="@string/notify"
+                android:layout_toEndOf="@id/animation_view"
+                />
 
         </RelativeLayout>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/batch_recycler"
             android:layout_width="match_parent"
-
-            android:layout_height="match_parent"
-            android:padding="10dp"
-
-
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/top" />
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:clickable="true"
-            android:onClick="addBatch"
+            android:id="@+id/addbath"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.851"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.858"
-            android:src="@drawable/_add_24"
+            app:srcCompat="@drawable/_add_24"
             app:maxImageSize="60dp"
+            android:onClick="addBatch"
+            android:focusable="true"
+            android:contentDescription="@string/todo" />
 
 
-            />
 
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="200dp"
-        android:id="@+id/nav"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="731dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

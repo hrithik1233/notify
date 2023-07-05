@@ -12,8 +12,8 @@ public class DatabaseBatch extends SQLiteOpenHelper {
     final static  public String BATCH_NAME="batchName";
     final static  public String BATCH_YEAR="batchYear";
     final static  public String TABLE_NAME="BatchTable";
-    public DatabaseBatch(Context context) {
-        super(context,"Batch.db", null, 1);
+    public DatabaseBatch(Context context,String db) {
+        super(context,db+".db", null, 1);
     }
 
     @Override
@@ -28,6 +28,10 @@ public class DatabaseBatch extends SQLiteOpenHelper {
        db.execSQL("drop table if exists "+TABLE_NAME);
     }
     public Boolean insert(Homefiles hf){
+        long res=-1;
+        try{
+
+
         SQLiteDatabase database=this.getWritableDatabase();
         ContentValues cv=new ContentValues();
         cv.put(BATCH_NAME,hf.getBatch());
@@ -35,22 +39,23 @@ public class DatabaseBatch extends SQLiteOpenHelper {
         Cursor cursor=database.query(TABLE_NAME,new String[]{BATCH_NAME},BATCH_NAME+"=? AND "+BATCH_YEAR +"=?",
                 new String[]{hf.getBatch(), hf.getYear()},null,null,null);
         if(cursor.moveToNext()) return false;
-        long res=database.insert(TABLE_NAME,null,cv);
-        database.close();
+        res=database.insert(TABLE_NAME,null,cv);
+
+        }catch (Exception e){}
         return res!=-1;
     }
+
+
     public Cursor fetch(){
         SQLiteDatabase database=this.getReadableDatabase();
-        Cursor cursor=database.query(TABLE_NAME,new String[]{BATCH_NAME,BATCH_YEAR},null,
-                null,null,null,null);
-        return cursor;
+        return database.query(TABLE_NAME,new String[]{BATCH_NAME,BATCH_YEAR},null, null,null,null,null);
     }
     public  Boolean delete(Homefiles hf){
         long res = 0;
         SQLiteDatabase database=this.getWritableDatabase();
         try{
              res=database.delete(TABLE_NAME,BATCH_NAME+"=? AND "+BATCH_YEAR+"=?",new String[]{hf.getBatch(), hf.getYear()});
-          database.close();
+
         }catch(Exception e){
     System.out.println(e);
         }

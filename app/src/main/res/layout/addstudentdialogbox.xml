@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent">
+<LinearLayout
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
@@ -43,9 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:columnCount="2"
-        android:orientation="horizontal"
-
-        >
+        android:orientation="horizontal">
         <TextView
 
             android:layout_height="wrap_content"
@@ -61,8 +63,7 @@
             android:textColor="#000000"
             android:textSize="12sp"
             android:layout_marginBottom="5dp"
-            android:layout_width="match_parent"
-            />
+            android:layout_width="match_parent" />
     </GridLayout>
     <GridLayout
         android:layout_height="wrap_content"
@@ -71,12 +72,10 @@
 
         >
         <TextView
-            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_width="150dp"
             android:text="Age of student: "
-            android:textColor="#000000"
-            />
+            android:textColor="#000000" />
         <EditText
             android:textColorHint="@color/hintcolour"
             android:layout_height="wrap_content"
@@ -89,7 +88,7 @@
             android:layout_weight="1"
             android:textColor="#000000"
             android:layout_width="match_parent"
-            />
+            android:autofillHints="" />
     </GridLayout>
 
 
@@ -97,7 +96,6 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="horizontal"
-
         >
         <TextView
             android:layout_weight="1"
@@ -132,13 +130,18 @@
             android:text="Student contact no: "
             android:textColor="#000000"
             />
+        <com.hbb20.CountryCodePicker
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:id="@+id/coutryCodeStudent"
+            android:layout_width="50dp" />
         <EditText
             android:textColorHint="@color/hintcolour"
             android:layout_height="wrap_content"
             android:hint="Student mobile no(opt)"
             android:layout_marginBottom="5dp"
             android:id="@+id/student_mobil"
-            android:maxLength="10"
+            android:maxLength="14"
             android:textColor="#000000"
             android:inputType="number"
             android:textSize="12sp"
@@ -181,13 +184,18 @@
             android:text="Parent Contact no: "
             android:textColor="#000000"
             />
+        <com.hbb20.CountryCodePicker
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:id="@+id/coutryCodeParent"
+            android:layout_width="50dp"/>
         <EditText
             android:textColorHint="@color/hintcolour"
             android:textColor="#000000"
             android:layout_height="wrap_content"
             android:hint="Parent mobile no (opt)"
             android:inputType="number"
-            android:maxLength="10"
+            android:maxLength="14"
             android:layout_marginBottom="5dp"
             android:id="@+id/parent_number"
             android:textSize="12sp"
@@ -201,6 +209,7 @@
         android:layout_width="match_parent"
         android:layout_marginBottom="8dp"
         android:orientation="horizontal">
+
         <TextView
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -208,6 +217,8 @@
             android:text="Address: "
             android:textColor="#000000"
             />
+
+
         <EditText
             android:textColorHint="@color/hintcolour"
             android:textSize="12sp"
@@ -216,6 +227,33 @@
             android:hint="Address (opt)"
             android:layout_marginBottom="5dp"
             android:id="@+id/address"
+            android:layout_columnWeight="1"
+            android:layout_width="match_parent"
+            />
+    </GridLayout>
+    <GridLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:text="Student regno: "
+            android:textColor="#000000"
+            />
+
+
+        <EditText
+            android:textColorHint="@color/hintcolour"
+            android:textSize="12sp"
+            android:textColor="#000000"
+            android:layout_height="wrap_content"
+            android:hint="Address (opt)"
+            android:layout_marginBottom="5dp"
+            android:id="@+id/Studentregno"
             android:layout_columnWeight="1"
             android:layout_width="match_parent"
             />
@@ -251,7 +289,6 @@
         android:layout_height="30dp"
         android:layout_width="match_parent"
         android:columnCount="2"
-
         android:orientation="horizontal">
         <TextView
             android:clickable="true"
@@ -280,3 +317,4 @@
 
 
 </LinearLayout>
+</ScrollView>
