@@ -16,6 +16,8 @@
     <color name="gray_light">#9E9A9A</color>
     <color name="purple">#CFC0F3</color>
     <color name="noteColour">#323131</color>
+    <color name="Text_colour_grey">#2B2B2B</color>
+    <color name="button_gb_blue">#3AA9F4</color>
 
 
 </resources>

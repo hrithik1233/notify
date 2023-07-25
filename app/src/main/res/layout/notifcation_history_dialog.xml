@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="500dp"
+    android:orientation="vertical">
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableLayout
+            android:layout_width="match_parent"
+
+            android:id="@+id/_notification_history_table"
+            android:layout_height="match_parent">
+
+
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:text="Notifaction History"
+                    android:textAlignment="center"
+                    android:fontFamily="@font/allerta"
+                    android:textSize="19dp"
+                    android:layout_margin="10dp"
+                    android:textColor="@color/button_gb_blue"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+            <TableRow
+                android:background="@drawable/table_border"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:background="@drawable/table_border"
+                     android:fontFamily="@font/allerta"
+                    android:textColor="@color/Text_colour_grey"
+                    android:textSize="16sp"
+                    android:text="Request"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+
+
+                    android:fontFamily="@font/allerta"
+                    android:textColor="@color/Text_colour_grey"
+                    android:textSize="16sp"
+                    android:text="state"/>
+            </TableRow>
+
+
+
+        </TableLayout>
+
+    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
+
+
+
+</LinearLayout>

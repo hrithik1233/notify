@@ -38,15 +38,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
+
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -62,10 +60,22 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
 import java.util.concurrent.atomic.AtomicInteger;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class AddDataMainPage extends AppCompatActivity implements StudentResponseInterface {
     EditText gender_EditText, date_EditText, time_EditText;
@@ -95,14 +105,14 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
     DatabaseReference reference;
     ActivityResultLauncher<Intent> activityResultLauncher;
 
-    @SuppressLint({"MissingInflatedId", "RestrictedApi", "NotifyDataSetChanged"})
+    @SuppressLint({"MissingInflatedId", "RestrictedApi", "NotifyDataSetChanged", "SetTextI18n", "UseCompatLoadingForDrawables"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        }catch (Exception e){
-            Log.i("test",e.getMessage());
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        } catch (Exception e) {
+            Log.i("test", e.getMessage());
         }
 
         setContentView(R.layout.activity_add_data_main_page);
@@ -151,7 +161,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
         send = findViewById(R.id.floatingActionButtonsend);
         recyclerView = findViewById(R.id.recyclerView);
         selectdelete = findViewById(R.id.deleteSelect);
-        arrayList = new ArrayList<StudentData>();
+        arrayList = new ArrayList<>();
         ed1 = findViewById(R.id.batch_top);
         ed2 = findViewById(R.id.year_top);
         back = findViewById(R.id.back);
@@ -162,7 +172,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
         String bt = intent.getStringExtra("batch_name");
         String yr = intent.getStringExtra("batchYear");
         dataBaseName = intent.getStringExtra("TABLE_NAME");
-        reference=FirebaseDatabase.getInstance().getReference(userDatabase+"/"+dataBaseName);
+        reference = FirebaseDatabase.getInstance().getReference(userDatabase + "/" + dataBaseName);
         db.createtabel(dataBaseName);
         setMultiDeletesetup();
         recyclerView.setHasFixedSize(true);
@@ -230,11 +240,10 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                                 0, aadhar.getText().toString(), regno.getText().toString());
 
                         Boolean res = db.insert(dataBaseName, data);
-                        int id=db.getIDofStudent(dataBaseName);
+                        int id = db.getIDofStudent(dataBaseName);
                         data.setId(id);
-                        Toast.makeText(this, id+" id is", Toast.LENGTH_SHORT).show();
 
-                        Log.i("test",reference.getPath().toString());
+                        Log.i("test", reference.getPath().toString());
                         if (res) {
 
                             arrayList.add(data);
@@ -358,7 +367,6 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                             chip1.setText("No selection is added");
                             chipGroup.addView(chip1);
                         }
-                        Toast.makeText(AddDataMainPage.this, temp.size() + "", Toast.LENGTH_SHORT).show();
                         chipGroup.removeView(view14);
                     });
                     chipGroup.addView(chip);
@@ -447,7 +455,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                         }
 
                         if (share.size() >= 1) {
-                            senWhtsappMessage(share);
+                            senWhtsappMessage();
                             adapter.notifyDataSetChanged();
                             adapter.setSelctionMode(false);
                         } else {
@@ -560,22 +568,22 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
     @Override
     public void onTouchDelete(int pos) {
         try {
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialogTheme));
-        builder.setTitle("Delete student").setMessage("Do you want to delete?").setPositiveButton("Yes", (dialogInterface, i) -> {
-            Boolean res = db.delete(dataBaseName, Integer.toString(arrayList.get(pos).getId()));
-            if (res) {
-                String tmp = arrayList.get(pos).getStdnt_name();
-                reference.child("studentdata").child(arrayList.get(pos).getId()+"").removeValue();
-                arrayList.remove(pos);
-                intialise();
+            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialogTheme));
+            builder.setTitle("Delete student").setMessage("Do you want to delete?").setPositiveButton("Yes", (dialogInterface, i) -> {
+                Boolean res = db.delete(dataBaseName, Integer.toString(arrayList.get(pos).getId()));
+                if (res) {
+                    String tmp = arrayList.get(pos).getStdnt_name();
+                    reference.child("studentdata").child(arrayList.get(pos).getId() + "").removeValue();
+                    arrayList.remove(pos);
+                    intialise();
 
-                Toast.makeText(AddDataMainPage.this, tmp + " deleted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(AddDataMainPage.this, "item not deleted", Toast.LENGTH_SHORT).show();
-            }
-        }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss()).show();
-        }catch (Exception e){
-            Log.i("test",e.getMessage());
+                    Toast.makeText(AddDataMainPage.this, tmp + " deleted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(AddDataMainPage.this, "item not deleted", Toast.LENGTH_SHORT).show();
+                }
+            }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss()).show();
+        } catch (Exception e) {
+            Log.i("test", e.getMessage());
         }
     }
 
@@ -657,7 +665,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                     Boolean res = db.update(dataBaseName, data);
                     if (res) {
                         dialog.dismiss();
-                        reference.child("studentdata").child(arrayList.get(pos).getId()+"").setValue(data);
+                        reference.child("studentdata").child(arrayList.get(pos).getId() + "").setValue(data);
                         intialise();
                         Toast.makeText(AddDataMainPage.this, "Updated successfully", Toast.LENGTH_SHORT).show();
                     }
@@ -717,26 +725,15 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
             selectdelete.setVisibility(View.INVISIBLE);
             selected.clear();
             arrayList.clear();
-            Cursor cursor = db.fetch(dataBaseName);
-            if (cursor != null && cursor.moveToNext()) {
-                Log.i("test",cursor.getCount()+"number of otems");
-                do {
-                    StudentData data = new StudentData(cursor.getInt(0),
-                            cursor.getString(1), cursor.getString(2)
-                            , cursor.getInt(3), cursor.getString(4)
-                            , cursor.getString(5)
-                            , cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getInt(9), cursor.getString(10), cursor.getString(11));
-                    arrayList.add(data);
-                } while (cursor.moveToNext());
 
-                adapter.notifyDataSetChanged();
-            }
-            if(arrayList.size()==0){
-
-               intialiseWithdatabase();
+            arrayList.size();
+            if (NetworkUtils.isInternetIsConnected(this)) {
+                intialiseWithdatabase();
+            } else {
+                localDatabaseFetch();
             }
 
-            numberOfStudentsTextView.setText("No of std : " + arrayList.size());
+
             if (selected.size() == 0) {
                 no_ofselected.setVisibility(View.INVISIBLE);
             } else {
@@ -744,8 +741,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                 no_ofselected.setText("No of selected: " + selected.size());
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            Log.i("test",e.getMessage());
+
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
@@ -753,47 +749,69 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
 
     private void intialiseWithdatabase() {
 
-               try{
-                  if (!NetworkUtils.isInternetIsConnected(this)) {
-                      throw new Exception("offline unable to connect");
-                  }else{
-                      Toast.makeText(this, "checking firebse", Toast.LENGTH_SHORT).show();
-                      DatabaseReference firebase = FirebaseDatabase.getInstance().getReference(userDatabase + "/" + dataBaseName + "/" + "studentdata");
-                    ProgressDialog  progressDialog = new ProgressDialog(this);
-                      progressDialog.setCancelable(true);
-                     progressDialog.show();
-                      new Handler().postDelayed(progressDialog::dismiss,800);
-                          firebase.addListenerForSingleValueEvent(new ValueEventListener() {
-                              @SuppressLint("NotifyDataSetChanged")
-                              @Override
-                              public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                  Log.i("dubugg","count is "+snapshot.getChildrenCount());
+        try {
+            if (!NetworkUtils.isInternetIsConnected(this)) {
+                throw new Exception("offline unable to connect");
+            } else {
+                Toast.makeText(this, "checking database", Toast.LENGTH_SHORT).show();
+                DatabaseReference firebase = FirebaseDatabase.getInstance().getReference(userDatabase + "/" + dataBaseName + "/" + "studentdata");
+                ProgressDialog progressDialog = new ProgressDialog(this);
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+                new Handler().postDelayed(() -> runOnUiThread(progressDialog::dismiss), 1000);
+                firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Log.i("dubugg", "count is " + snapshot.getChildrenCount());
 
-                                  arrayList.clear();
-                                  for (DataSnapshot data : snapshot.getChildren()) {
-                                      StudentData dt = data.getValue(StudentData.class);
-                                      if (dt != null) {
-                                          Toast.makeText(AddDataMainPage.this, dt.getStdnt_name(), Toast.LENGTH_SHORT).show();
-                                          arrayList.add(dt);
-                                          db.insert(dataBaseName, dt);
-                                          Toast.makeText(AddDataMainPage.this, dt.getId()+"", Toast.LENGTH_SHORT).show();
-                                      }
-                                  }
-
-                                  Log.i("test"," data base count size is "+arrayList.size());
-                                  adapter.notifyDataSetChanged();
-                              }
-
-                              @Override
-                              public void onCancelled(@NonNull DatabaseError error) {
-                                  progressDialog.dismiss();
-                              }
-                          });
-
-                  }
+                        arrayList.clear();
+                        for (DataSnapshot data : snapshot.getChildren()) {
+                            StudentData dt = data.getValue(StudentData.class);
+                            if (dt != null) {
+                                arrayList.add(dt);
+                                db.insert(dataBaseName, dt);
+                            }
+                        }
 
 
-            } catch (Exception e){}
+                        adapter.notifyDataSetChanged();
+                        numberOfStudentsTextView.setText("No of std : " + arrayList.size());
+                        runOnUiThread(progressDialog::dismiss);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        runOnUiThread(progressDialog::dismiss);
+
+                        arrayList.clear();
+                        localDatabaseFetch();
+                    }
+                });
+
+            }
+
+
+        } catch (Exception e) {
+        }
+    }
+
+    @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
+    void localDatabaseFetch() {
+        Cursor cursor = db.fetch(dataBaseName);
+        if (cursor != null && cursor.moveToNext()) {
+            Log.i("test", cursor.getCount() + "number of otems");
+            do {
+                StudentData data = new StudentData(cursor.getInt(0),
+                        cursor.getString(1), cursor.getString(2)
+                        , cursor.getInt(3), cursor.getString(4)
+                        , cursor.getString(5)
+                        , cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getInt(9), cursor.getString(10), cursor.getString(11));
+                arrayList.add(data);
+            } while (cursor.moveToNext());
+            numberOfStudentsTextView.setText("No of std : " + arrayList.size());
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public static boolean validAge(int age) {
@@ -810,21 +828,16 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(AddDataMainPage.this, R.style.CustomAlertDialogTheme));
             builder.setTitle("Delete items").setMessage("Do you want to delete records (" + selected.size() + ")")
                     .setPositiveButton("yes", (dialogInterface, i) -> {
-                        int count = 0;
-                        SharedPreferences pref = getSharedPreferences("applogin", MODE_PRIVATE);
-                        String databaseMain = pref.getString(SignUpActivity.MAIN_DATABASE_NAME, "default");
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                         for (int j = 0; j < selected.size(); j++) {
                             boolean res = db.delete(dataBaseName, Integer.toString(selected.get(j).getId()));
                             if (res) {
                                 reference.child("studentdata").child(Integer.toString(selected.get(j).getId())).
                                         removeValue();
-                                count++;
+
                             }
                         }
-                        Toast.makeText(AddDataMainPage.this, "" + count + " items deleted", Toast.LENGTH_SHORT).show();
 
-                       intialise();
+                        intialise();
                         selectdelete.setVisibility(View.INVISIBLE);
                     }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss()).show();
 
@@ -860,18 +873,20 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                         Pin.setText(configure.getPin());
                         isaccessibile.setChecked(configure.isaccessible);
                     }
-                    progressBar.setVisibility(View.GONE);
+                    runOnUiThread(() -> progressBar.setVisibility(View.GONE));
+
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    progressBar.setVisibility(View.GONE);
+
+                    runOnUiThread(() -> progressBar.setVisibility(View.GONE));
                 }
             });
             new Handler().postDelayed(() -> {
                 if (progressBar.getVisibility() == View.VISIBLE) {
                     Toast.makeText(this, "check network", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
+                    runOnUiThread(() -> progressBar.setVisibility(View.GONE));
                 }
             }, 3000);
 
@@ -879,11 +894,12 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
             uploadbt.setOnClickListener(view -> {
                 clicks.getAndIncrement();
                 try {
+                    ProgressDialog progressDialog = new ProgressDialog(this);
+                    progressDialog.show();
                     boolean isaccess = isaccessibile.isChecked();
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference(userDatabase + "/" + dataBaseName);
                     String name1 = Name.getText().toString();
                     String pin1 = Pin.getText().toString();
-                    Toast.makeText(this, name1, Toast.LENGTH_SHORT).show();
                     if (name1.equals("") || pin1.equals(""))
                         throw new Exception("Enter a valid entry");
                     BatchPinConfigure configure = new BatchPinConfigure(name1, pin1, isaccess);
@@ -899,17 +915,21 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                                 new Handler().postDelayed(() -> {
                                     upload.dismiss();
                                     Toast.makeText(AddDataMainPage.this, "configured successfully", Toast.LENGTH_SHORT).show();
-                                }, 3000);
+                                }, 500);
                             } else {
                                 upload.dismiss();
                                 Toast.makeText(AddDataMainPage.this, "configured successfully", Toast.LENGTH_SHORT).show();
                             }
+                            runOnUiThread(progressDialog::dismiss);
+
 
                         } else {
+                            runOnUiThread(progressDialog::dismiss);
                             Toast.makeText(AddDataMainPage.this, "configured failed", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } catch (Exception e) {
+
                     Toast.makeText(AddDataMainPage.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -921,10 +941,11 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
     }
 
     public void downloadFromFireBase(View v) {
-        if(!NetworkUtils.isInternetIsConnected(this)){
+        if (!NetworkUtils.isInternetIsConnected(this)) {
             Toast.makeText(this, "check network", Toast.LENGTH_SHORT).show();
-        }else {
+        } else {
             Dialog download = new Dialog(this);
+            ProgressDialog reqDialog = new ProgressDialog(this);
             download.setContentView(R.layout.request_batch_add_dialog);
             download.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             download.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -941,42 +962,45 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
             Button cancel, request;
             cancel = download.findViewById(R.id.cancelrequest);
             request = download.findViewById(R.id.requestupload);
-               cancel.setOnClickListener(view -> {
-                   Toast.makeText(AddDataMainPage.this, "request cancelled", Toast.LENGTH_SHORT).show();
-                   download.dismiss();
-               });
+            cancel.setOnClickListener(view -> {
+                Toast.makeText(AddDataMainPage.this, "request cancelled", Toast.LENGTH_SHORT).show();
+                download.dismiss();
+            });
             request.setOnClickListener(view -> {
+                reqDialog.show();
                 BatchPinConfigure confi = new BatchPinConfigure(reqname.getText().toString(), reqpin.getText().toString());
                 String batchofowner = reqBatch.getText().toString();
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-                reference.addValueEventListener(new ValueEventListener() {
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot data : snapshot.getChildren()) {
                             if (data.child(batchofowner.toUpperCase()).child("batchPin").exists()) {
+                                String token = (String) data.child("Userdata-1").child("token").getValue();
+
                                 BatchPinConfigure bt = data.child(batchofowner.toUpperCase()).child("batchPin").getValue(BatchPinConfigure.class);
-                                if (bt != null && bt.getName().equalsIgnoreCase(confi.getName()) && bt.getPin().equals(confi.getPin())&&bt.isIsaccessible()) {
+                                if (bt != null && bt.getName().equalsIgnoreCase(confi.getName()) && bt.getPin().equals(confi.getPin()) && bt.isIsaccessible()) {
                                     MessagesReceiver message = new MessagesReceiver(id, new DateAndTime(), name, email, dataBaseName,
                                             confi, databaseMain, batchofowner);
+                                    sendNotifiaction(token, message);
 
-                                   data.getRef().child("messageRecieved").child(message.getMessageId() + "").setValue(message).addOnCompleteListener(task -> {
-                                       if(task.isSuccessful()){
-                                           Toast.makeText(AddDataMainPage.this, "Request send successfully", Toast.LENGTH_SHORT).show();
-                                           DatabaseReference myref=FirebaseDatabase.getInstance().getReference(databaseMain);
-                                           myref.child("MessageSend").child(id+"").setValue(message);
-                                       }
-                                   }).addOnFailureListener(e ->
-                                           Toast.makeText(AddDataMainPage.this, e.getMessage(), Toast.LENGTH_SHORT).show());
+                                    data.getRef().child("messageRecieved").child(message.getMessageId() + "").setValue(message).addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(AddDataMainPage.this, "Request send successfully", Toast.LENGTH_SHORT).show();
+                                            DatabaseReference myref = FirebaseDatabase.getInstance().getReference(databaseMain);
+                                            myref.child("MessageSend").child(id + "").setValue(message);
+                                        }
+                                    }).addOnFailureListener(e ->
+                                            Toast.makeText(AddDataMainPage.this, e.getMessage(), Toast.LENGTH_SHORT).show());
 
                                     download.dismiss();
-                                }else if(!bt.isIsaccessible()){
+                                } else if (!bt.isIsaccessible()) {
                                     Toast.makeText(AddDataMainPage.this, "Access Denied", Toast.LENGTH_SHORT).show();
                                 }
                                 break;
-                            }else{
-                                Toast.makeText(AddDataMainPage.this, "No user found", Toast.LENGTH_SHORT).show();
                             }
                         }
+                        runOnUiThread(reqDialog::dismiss);
                     }
 
                     @Override
@@ -986,6 +1010,46 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                 });
 
             });
+        }
+    }
+
+    private void sendNotifiaction(String token, MessagesReceiver mr) {
+        try {
+
+            JSONObject object = new JSONObject();
+            JSONObject notification = new JSONObject();
+            notification.put("title", "Data accessing request");
+            notification.put("body", mr.getRequesterName() + " requesting for batch access " + mr.getReqeustedBatchOFowner());
+
+            JSONObject dataObj = new JSONObject();
+
+            object.put("data", dataObj);
+            object.put("notification", notification);
+            object.put("to", token);
+
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            OkHttpClient client = new OkHttpClient();
+            String url = "https://fcm.googleapis.com/fcm/send";
+            RequestBody reqestBody = RequestBody.create(object.toString(), JSON);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(reqestBody)
+                    .addHeader("Authorization", "key=AAAAkEPqclM:APA91bF0Xmf1i-ZSE1K0tcBIb47cWRDSngDS_WZdP9l3SQ4rRIWfR1uAa6M0iQsDlfhyaht1ollp40wpieu_OWGSSgNS40VoqISEb9dGRTbAQR3lcOhUJNjbWX51wJD3C3yg50FAnpmo")
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) {
+
+                }
+            });
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1005,8 +1069,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
     }
 
 
-
-    public void senWhtsappMessage(ArrayList<DataIntentShare> shares) {
+    public void senWhtsappMessage() {
         if (!Settings.canDrawOverlays(AddDataMainPage.this)) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
 

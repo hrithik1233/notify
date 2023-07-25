@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:layout_margin="5dp"
+    android:backgroundTint="@color/white"
+    android:elevation="10dp"
+    app:cardCornerRadius="10dp"
+
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:layout_marginLeft="5dp"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="@font/allerta"
+                android:textColor="@color/Text_colour_grey"
+                android:text="Request for batch " />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/notification_batch_title"                android:text=":example "
+                android:fontFamily="@font/allerta"
+                android:textColor="@color/Text_colour_grey"
+                android:layout_height="wrap_content"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_height="0dp"
+                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="10sp"
+                android:textColor="@color/Text_colour_grey"
+                android:id="@+id/dateandtime_notification"
+                android:fontFamily="@font/allerta"
+                android:text="24/07/2023 11:58 AM"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+           android:layout_width="match_parent"
+           android:orientation="horizontal"
+
+           android:background="@color/white"
+
+           android:layout_height="wrap_content">
+
+           <TextView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:fontFamily="@font/allerta"
+               android:text="Reqester Name: "
+               android:textColor="@color/Text_colour_grey"
+               android:textSize="12dp" />
+
+           <TextView
+               android:id="@+id/requester_name_notification"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:fontFamily="@font/allerta"
+               android:textColor="@color/Text_colour_grey"
+               android:text="name..."
+               android:textSize="12dp" />
+       </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/allerta"
+                android:text="Reqester Email: "
+                android:textColor="@color/Text_colour_grey"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/requester_email_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/allerta"
+                android:text="email..."
+                android:textColor="@color/Text_colour_grey"
+                android:textSize="12dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/allerta"
+                android:text="Reqested batch: "
+                android:textColor="@color/Text_colour_grey"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/requested_batch_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/allerta"
+                android:text="batch..."
+                android:textColor="@color/Text_colour_grey"
+                android:textSize="12dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/allerta"
+                android:text="Message ID: "
+                android:textColor="@color/Text_colour_grey"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/requested_ID_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/allerta"
+                android:text="batch..."
+                android:textColor="@color/Text_colour_grey"
+                android:textSize="12dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/white"
+             android:gravity="end"
+
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/denie_notfier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Denie"
+                android:textSize="11dp"
+                app:backgroundTint="@color/button_gb_blue"
+                 app:cornerRadius="20dp"
+                android:textColor="@color/white"
+                 android:layout_margin="5dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/approve_notfier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Approve"
+                android:textSize="11dp"
+         app:backgroundTint="@color/button_gb_blue"
+                app:cornerRadius="20dp"
+                android:textColor="@color/white"
+                android:layout_margin="5dp"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

@@ -1,21 +1,27 @@
 package com.example.myapplication;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
 @SuppressLint("RestrictedApi")
-public class MessagesReceiver implements Parcelable {
+public class MessagesReceiver implements Parcelable  {
     long messageId;
-    DateAndTime dateAndTime;
-    String requesterName;
-    String requesterEmail;
-    String requesterbatch;
-    BatchPinConfigure configure;
-    String ReqeustedBatchOfOwner;
-    String idOfRequester;
+
+    DateAndTime dateAndTime ;
+    String requestResult="none";
+    //none - if no response
+    //accepted- if accepted
+    //denied - if denied
+    String requesterName="null";
+    String requesterEmail="null";
+    String requesterbatch="null";
+    BatchPinConfigure configure ;
+    String reqeustedBatchOFowner="null";
+    String idOfRequester="null";
 
     public MessagesReceiver(long messageId, DateAndTime dt, String requesterName,
                             String requesterEmail, String requesterbatch, BatchPinConfigure configure,
@@ -27,19 +33,52 @@ public class MessagesReceiver implements Parcelable {
         this.requesterbatch = requesterbatch;
         this.configure = configure;
         this.idOfRequester=idOfRequester;
-        this.ReqeustedBatchOfOwner = reqeustedBatchOFowner;
+        this.reqeustedBatchOFowner = reqeustedBatchOFowner;
+
+
     }
 
     public MessagesReceiver() {
+
+    }
+
+    public String isRequestResult() {
+        return requestResult;
+    }
+
+    public void setRequestResult(String requestResult) {
+        this.requestResult = requestResult;
     }
 
     protected MessagesReceiver(Parcel in) {
         messageId = in.readLong();
+        dateAndTime = in.readParcelable(DateAndTime.class.getClassLoader());
         requesterName = in.readString();
         requesterEmail = in.readString();
         requesterbatch = in.readString();
-        ReqeustedBatchOfOwner = in.readString();
+        configure = in.readParcelable(BatchPinConfigure.class.getClassLoader());
+        reqeustedBatchOFowner = in.readString();
         idOfRequester = in.readString();
+        requestResult=in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(messageId);
+        dest.writeParcelable(dateAndTime, flags);
+        dest.writeString(requesterName);
+        dest.writeString(requesterEmail);
+        dest.writeString(requesterbatch);
+        dest.writeParcelable(configure, flags);
+        dest.writeString(reqeustedBatchOFowner);
+        dest.writeString(idOfRequester);
+        dest.writeString(requestResult);
+
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<MessagesReceiver> CREATOR = new Creator<MessagesReceiver>() {
@@ -83,21 +122,9 @@ public class MessagesReceiver implements Parcelable {
     }
 
     public String getReqeustedBatchOFowner() {
-        return ReqeustedBatchOfOwner;
+        return reqeustedBatchOFowner;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeLong(messageId);
-        parcel.writeString(requesterName);
-        parcel.writeString(requesterEmail);
-        parcel.writeString(requesterbatch);
-        parcel.writeString(ReqeustedBatchOfOwner);
-        parcel.writeString(idOfRequester);
-    }
+
 }

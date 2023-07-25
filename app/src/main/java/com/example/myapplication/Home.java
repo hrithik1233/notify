@@ -1,34 +1,18 @@
 package com.example.myapplication;
-
 import static com.example.myapplication.SignUpActivity.APP_LOGIN;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;;
-import android.provider.ContactsContract;
+import android.os.HandlerThread;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +24,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.airbnb.lottie.LottieAnimationView;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,22 +44,19 @@ import java.util.Objects;
 
 public class Home extends AppCompatActivity implements RecyclerBatchInterface {
     Dialog dialog;
-    ArrayList<MessagesReceiver> recievedMessages;
+
+
     ImageView NavBarNotificationHighlight;
+    final int[] resultNotification = new int[1];
     DatabaseBatch databaseBatch;
     RecyclerView recyclerView;
     ArrayList<Homefiles> arrayList;
-    FirebaseAuth fireAuth;
+
     DatabaseReference firebase;
-    FirebaseUser user;
+
     Dialog navManu;
     String databaseMain = "";
-
-
     HomeFilesAdapter homeFilesAdapter;
-
-    String Mytoken;
-
 
     @SuppressLint({"MissingInflatedId", "RtlHardcoded"})
     @Override
@@ -82,13 +65,13 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
         setContentView(R.layout.activity_home);
         try {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        }catch (Exception e){}
+        }catch (Exception ignored){}
 
-        recievedMessages=new ArrayList<>();
+     resultNotification[0]=0;
 
         NavBarNotificationHighlight = findViewById(R.id.notificationHighlightHome);
         NavBarNotificationHighlight.setVisibility(View.INVISIBLE);
-        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(s -> Log.d("token", s));
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(s -> FirebaseDatabase.getInstance().getReference(databaseMain).child("Userdata-1").child("token").setValue(s));
 
         navManu = new Dialog(this);
         navManu.setContentView(R.layout.navingatiob_bar);
@@ -114,7 +97,6 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                 @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = preferences.edit();
                 for (DataSnapshot data : snapshot.getChildren()) {
                     if (Objects.equals(data.getKey(), "name")) {
-                        Toast.makeText(Home.this, "sdf", Toast.LENGTH_SHORT).show();
                         String val = data.getValue(String.class);
                         editor.putString("login_name", val);
                     }
@@ -129,8 +111,6 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
 
         String Main_database_name;
         Main_database_name = preferences.getString(SignUpActivity.MAIN_DATABASE_NAME, "default");
-        String name = preferences.getString("login_name", "");
-        String password = preferences.getString("login_password", "");
         SharedPreferences pre = getSharedPreferences(APP_LOGIN, MODE_PRIVATE);
 
 
@@ -141,16 +121,13 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                 ImageView imgView=new ImageView(this);
                 imgView.setImageResource(R.drawable.accessiblity_serivice_image1g);
                 AcceDialog.setView(imgView);
-                AcceDialog.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent acc = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                        acc.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(acc);
-                        SharedPreferences.Editor editor = pre.edit();
-                        editor.putBoolean("isaccessed", true);
-                        editor.apply();
-                    }
+                AcceDialog.setPositiveButton("ok", (dialogInterface, i) -> {
+                    Intent acc = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                    acc.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(acc);
+                    SharedPreferences.Editor editor = pre.edit();
+                    editor.putBoolean("isaccessed", true);
+                    editor.apply();
                 });
             }
 
@@ -173,32 +150,11 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
 
     private void checkAnyMessageRecieved() {
         DatabaseReference ref=FirebaseDatabase.getInstance().getReference(databaseMain);
-          ref.child("messageRecieved").addListenerForSingleValueEvent(new ValueEventListener() {
+          ref.child("messageRecieved").addValueEventListener(new ValueEventListener() {
               @Override
               public void onDataChange(@NonNull DataSnapshot snapshot) {
-                  for(DataSnapshot data: snapshot.getChildren()){
-                      Log.d("msg1",data.getKey());
-                      MessagesReceiver messagesReceiver=data.getValue(MessagesReceiver.class);
-                      if(messagesReceiver!=null){
-                          recievedMessages.add(messagesReceiver);
-                      }
-                  }
-                  if(recievedMessages.size()>0){
-                      NotificationCompat.Builder builder = new NotificationCompat.Builder(Home.this, getResources().getString(R.string.NotificationChannelId))
-                              .setSmallIcon(R.drawable.arrow_circle_down_24)
-                              .setContentTitle("Access data Request")
-                              .setContentText(recievedMessages.get(recievedMessages.size()-1).getRequesterName()+" has asked for requesting "+recievedMessages.get(recievedMessages.size()-1).getReqeustedBatchOFowner())
-                              .setStyle(new NotificationCompat.BigTextStyle()
-                                      .bigText(recievedMessages.get(recievedMessages.size()-1).getRequesterName()+" has asked for requesting "+recievedMessages.get(recievedMessages.size()-1).getReqeustedBatchOFowner()))
-                              .setPriority(NotificationCompat.PRIORITY_HIGH);
-                      NotificationManagerCompat notificationManager = NotificationManagerCompat.from(Home.this);
-
-// notificationId is a unique int for each notification that you must define
-                      if (ActivityCompat.checkSelfPermission(Home.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-
-                          return;
-                      }
-                      notificationManager.notify(1, builder.build());
+                  if(snapshot.getChildrenCount()>0){
+                    resultNotification[0]=1;
                       NavBarNotificationHighlight.setVisibility(View.VISIBLE);
                   }
               }
@@ -208,14 +164,14 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
 
               }
           });
-        Log.d("msg1",recievedMessages.size()+"fgd");
+
 
     }
 
     private void setPrefrences() {
         SharedPreferences pref = getSharedPreferences("applogin", MODE_PRIVATE);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(databaseMain + "/" + "Userdata-1/dateAndTime");
-        Toast.makeText(this, databaseMain, Toast.LENGTH_SHORT).show();
+
         SharedPreferences.Editor editor = pref.edit();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -244,6 +200,7 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     public void addBatch(View view) {
         try {
             EditText btcName, btcYr;
@@ -340,11 +297,9 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
 
                         for (DataSnapshot data : snapshot.getChildren()) {
 
-                            if (Objects.equals(data.getKey(), "Userdata-1")) {
-
-                            } else {
+                            if (!Objects.equals(data.getKey(), "Userdata-1")){
                                 DataSnapshot d = data.child("batchdata");
-                                Homefiles dt = (Homefiles) d.getValue(Homefiles.class);
+                                Homefiles dt = d.getValue(Homefiles.class);
                                 if (dt != null) {
                                     databaseBatch.insert(dt);
                                     arrayList.add(dt);
@@ -353,14 +308,15 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                         }
                         Collections.reverse(arrayList);
                         System.out.println(arrayList);
-                        progressDialog.dismiss();
+                        runOnUiThread(progressDialog::dismiss);
+
                         homeFilesAdapter.notifyDataSetChanged();
 
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        progressDialog.dismiss();
+                        runOnUiThread(progressDialog::dismiss);
                         Toast.makeText(Home.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -403,19 +359,13 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                        ref.addListenerForSingleValueEvent(new ValueEventListener() {
                            @Override
                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                               ArrayList<StudentData> dt=new ArrayList<>();
-                               Homefiles batchdata;
                                for(DataSnapshot data:snapshot.getChildren()){
-                                   Log.i("test",data.getKey());
-                                   if(data.getKey().equals("batchdata")){
-                                       batchdata=data.getValue(Homefiles.class);
-                                   }
+
                                    if(Objects.equals(data.getKey(), "Userdata-1")){
                                        DateAndTime dateAndTime=data.child("dateAndTime").getValue(DateAndTime.class);
                                        String username=data.child("name").getValue(String.class);
                                        String userEmail=data.child("email").getValue(String.class);
-                                       Toast.makeText(Home.this, "found", Toast.LENGTH_SHORT).show();
-                                       renamedBatch.child(hf.getTable_Name()).child("Userdata-1").child("name").setValue(username);
+                                        renamedBatch.child(hf.getTable_Name()).child("Userdata-1").child("name").setValue(username);
                                        renamedBatch.child(hf.getTable_Name()).child("Userdata-1").child("email").setValue(userEmail);
                                        renamedBatch.child(hf.getTable_Name()).child("Userdata-1").child("dateAndTime").setValue(dateAndTime);
 
@@ -431,9 +381,9 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                        });
                         StudentsDatabase db=new StudentsDatabase(this);
                         db.renameTable( arrayList.get(position).getTable_Name(),n1);
-                    }catch (Exception e){
+                    }catch (Exception ignored){
 
-                        Log.i("test",e.getMessage());
+
                     }
 
                     arrayList.get(position).setYear(yr);
@@ -468,7 +418,7 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                             Boolean res = databaseBatch.delete(arrayList.get(position));
                             StudentsDatabase db = new StudentsDatabase(Home.this);
                             db.dropTable(tableName);
-                            Toast.makeText(Home.this, databaseMain, Toast.LENGTH_SHORT).show();
+
                             firebase = FirebaseDatabase.getInstance().getReference(databaseMain);
                             firebase.child(tableName).removeValue();
 
@@ -477,8 +427,8 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
                                 homeFilesAdapter.notifyDataSetChanged();
                                 Toast.makeText(Home.this, temp + " successfully removed", Toast.LENGTH_SHORT).show();
                             }
-                            }catch (Exception e){
-                                Log.i("test","error"+e.getMessage());
+                            }catch (Exception ignored){
+
                             }
                             dialog1.cancel();
                         }).setNegativeButton("No", (dialogInterface, i) -> {
@@ -527,9 +477,12 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
         ImageView close = navManu.findViewById(R.id.animation_close);
         ImageView notificationHighlight = navManu.findViewById(R.id.notificationHighlight);
         notificationHighlight.setVisibility(View.INVISIBLE);
-        if(recievedMessages.size()>0){
+        if(resultNotification[0]>0){
             notificationHighlight.setVisibility(View.VISIBLE);
+
         }
+
+
         Animation ballsquash = AnimationUtils.loadAnimation(this, R.anim.bouns_squash);
         close.startAnimation(ballsquash);
         close.setOnClickListener(view -> {
@@ -567,18 +520,15 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
 
         notification.setOnClickListener(view -> {
             Intent intent=new Intent(Home.this,Notifications.class);
-            intent.putParcelableArrayListExtra("messages",recievedMessages);
+            intent.putExtra("databaseMain",databaseMain);
+
             startActivity(intent);
+
         });
 
         logout.setOnClickListener(view -> {
             AlertDialog.Builder logout1 = new AlertDialog.Builder(new ContextThemeWrapper(Home.this, R.style.CustomAlertDialogTheme));
-            logout1.setTitle("Log out").setMessage("Do you want to log out").setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
-            }).setPositiveButton("yes", (dialogInterface, i) -> {
+            logout1.setTitle("Log out").setMessage("Do you want to log out").setNegativeButton("NO", (dialogInterface, i) -> dialogInterface.dismiss()).setPositiveButton("yes", (dialogInterface, i) -> {
                 SharedPreferences pre = getSharedPreferences(APP_LOGIN, MODE_PRIVATE);
                 SharedPreferences.Editor editor = pre.edit();
                 editor.putBoolean("isaccessed", false);
@@ -595,5 +545,6 @@ public class Home extends AppCompatActivity implements RecyclerBatchInterface {
         });
 
     }
+
 
 }

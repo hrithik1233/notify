@@ -11,7 +11,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/lightDark">
+        android:orientation="horizontal"
+        android:background="@color/button_gb_blue">
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -20,10 +21,35 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"/>
 
+ <TextView
+     android:layout_width="wrap_content"
+     android:textColor="@color/white"
+     android:fontFamily="@font/allerta"
+     android:layout_margin="5dp"
+     android:textSize="18dp"
+     android:layout_gravity="center_vertical"
+     android:layout_height="wrap_content"
+     android:text="Notification"/>
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.1"/>
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="50dp"
+            android:id="@+id/notifiaction_history"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/history_24"
+            android:padding="5dp"
+            android:outlineProvider="none"
+            app:cornerRadius="50dp"
+            android:clipToOutline="false"/>
+
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/NotifiactionrecyclerView"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
