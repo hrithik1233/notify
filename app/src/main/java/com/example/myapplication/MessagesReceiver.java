@@ -17,11 +17,39 @@ public class MessagesReceiver implements Parcelable  {
     //accepted- if accepted
     //denied - if denied
     String requesterName="null";
+    String resposeTime="";
+    String requesterToken="";
+    String receiverToken="";
     String requesterEmail="null";
     String requesterbatch="null";
     BatchPinConfigure configure ;
     String reqeustedBatchOFowner="null";
     String idOfRequester="null";
+   String ownerName="";
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getRequesterToken() {
+        return requesterToken;
+    }
+
+    public void setRequesterToken(String requesterToken) {
+        this.requesterToken = requesterToken;
+    }
+
+    public String getReceiverToken() {
+        return receiverToken;
+    }
+
+    public void setReceiverToken(String receiverToken) {
+        this.receiverToken = receiverToken;
+    }
 
     public MessagesReceiver(long messageId, DateAndTime dt, String requesterName,
                             String requesterEmail, String requesterbatch, BatchPinConfigure configure,
@@ -60,6 +88,10 @@ public class MessagesReceiver implements Parcelable  {
         reqeustedBatchOFowner = in.readString();
         idOfRequester = in.readString();
         requestResult=in.readString();
+        resposeTime=in.readString();
+        receiverToken=in.readString();
+        requesterToken=in.readString();
+        ownerName=in.readString();
     }
 
     @Override
@@ -73,6 +105,10 @@ public class MessagesReceiver implements Parcelable  {
         dest.writeString(reqeustedBatchOFowner);
         dest.writeString(idOfRequester);
         dest.writeString(requestResult);
+        dest.writeString(resposeTime);
+        dest.writeString(receiverToken);
+        dest.writeString(requesterToken);
+        dest.writeString(ownerName);
 
     }
 

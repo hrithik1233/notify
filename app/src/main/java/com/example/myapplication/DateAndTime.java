@@ -58,8 +58,13 @@ public class DateAndTime  implements Parcelable  {
 
     @NonNull
     @Override
-    public String toString() {
+    public  String toString() {
         return  date+" "+time;
+    }
+
+    public static String currentDateAndTime(){
+
+        return getCurrentDate()+" "+getCurrentTime();
     }
 
     public static String getCurrentDate(){
@@ -70,7 +75,7 @@ public class DateAndTime  implements Parcelable  {
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         res= dateFormat.format(currentDate);
-        }catch (Exception e){}
+        }catch (Exception ignored){}
         return res;
     }
     public static String getCurrentTime(){

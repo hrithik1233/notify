@@ -69,6 +69,29 @@
           android:drawablePadding="8dp"
           android:layout_height="wrap_content"
           />
+    <LinearLayout
+        android:id="@+id/nav_messages"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Notifications"
+            android:layout_marginVertical="9dp"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:padding="8dp"
+            android:drawablePadding="8dp"
+            android:layout_height="wrap_content"
+            app:drawableLeftCompat="@drawable/iconsbell24" />
+        <ImageView
+            android:layout_height="10dp"
+            android:layout_width="10dp"
+            android:id="@+id/notificationHighlight"
+            android:layout_gravity="center"
+            android:background="@drawable/green_dot"
+            />
+    </LinearLayout>
     <TextView
         android:layout_width="match_parent"
         android:text="Help"
@@ -84,29 +107,7 @@
 
 
 
-    <LinearLayout
-        android:id="@+id/nav_messages"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        >
-    <TextView
-        android:layout_width="wrap_content"
-        android:text="Notifications"
-        android:layout_marginVertical="9dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:padding="8dp"
-        android:drawablePadding="8dp"
-        android:layout_height="wrap_content"
-        app:drawableLeftCompat="@drawable/iconsbell24" />
-        <ImageView
-            android:layout_height="10dp"
-            android:layout_width="10dp"
-            android:id="@+id/notificationHighlight"
-            android:layout_gravity="center"
-            android:background="@drawable/green_dot"
-            />
-    </LinearLayout>
+
     <TextView
         android:layout_width="match_parent"
         android:text="Log  out"

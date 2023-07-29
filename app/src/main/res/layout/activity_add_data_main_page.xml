@@ -8,8 +8,9 @@
     android:background="@color/white">
 
        <LinearLayout
-           android:layout_height="50dp"
+           android:layout_height="80dp"
            android:background="@color/purple_700"
+           android:paddingBottom="10dp"
            android:layout_width="match_parent"
            >
            <ImageView
@@ -17,15 +18,18 @@
                android:layout_height="wrap_content"
                android:layout_width="wrap_content"
                android:src="@drawable/_arrow_back_24"
-               android:layout_marginLeft="5dp"
-               android:layout_gravity="center"
+
+               android:layout_marginLeft="8dp"
+               android:layout_marginRight="8dp"
+               android:layout_gravity="bottom"
                />
            <TextView
                android:layout_height="wrap_content"
                android:layout_width="wrap_content"
-              android:layout_gravity="center"
-               android:layout_marginLeft="3dp"
+               android:layout_gravity="bottom"
+
                android:text="Batch:"
+
                android:id="@+id/bt"
                android:textColor="@color/white"
                android:textStyle="bold"
@@ -33,7 +37,7 @@
            <TextView
                android:layout_height="wrap_content"
                android:layout_width="wrap_content"
-               android:layout_gravity="center"
+               android:layout_gravity="bottom"
                android:id="@+id/batch_top"
               android:layout_alignEnd="@id/bt"
                android:layout_marginLeft="3dp"
@@ -44,7 +48,7 @@
            <TextView
                android:layout_height="wrap_content"
                android:layout_width="wrap_content"
-               android:layout_gravity="center"
+               android:layout_gravity="bottom"
                android:layout_marginLeft="8dp"
                android:text="Year:"
                android:textColor="@color/white"
@@ -53,7 +57,7 @@
            <TextView
                android:layout_height="wrap_content"
                android:layout_width="wrap_content"
-               android:layout_gravity="center"
+               android:layout_gravity="bottom"
                android:id="@+id/year_top"
                android:layout_alignEnd="@id/bt"
                android:layout_marginLeft="3dp"
@@ -74,7 +78,7 @@
                android:layout_marginLeft="10dp"
                android:visibility="visible"
                android:onClick="uploadToFireBase"
-               android:layout_gravity="center"
+               android:layout_gravity="bottom"
                />
            <View
                android:layout_width="0dp"
@@ -89,7 +93,7 @@
                android:layout_marginLeft="10dp"
                android:visibility="visible"
                android:onClick="downloadFromFireBase"
-               android:layout_gravity="center"
+               android:layout_gravity="bottom"
                />
            <View
                android:layout_width="0dp"
@@ -102,8 +106,8 @@
                android:layout_width="wrap_content"
                android:src="@drawable/baseline_delete_white"
                android:layout_marginLeft="10dp"
-               android:visibility="invisible"
-               android:layout_gravity="center"
+               android:visibility="gone"
+               android:layout_gravity="bottom"
 
                />
            <View
@@ -228,6 +232,11 @@
          android:drawableRight="@drawable/search_24"
          />
     </LinearLayout>
+ <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+     android:layout_width="match_parent"
+     android:id="@+id/addDatarefreshLayout"
+     android:layout_height="wrap_content">
+
 
        <androidx.recyclerview.widget.RecyclerView
            android:layout_width="match_parent"
@@ -235,5 +244,6 @@
    android:id="@+id/recyclerView"
 
            android:layout_height="match_parent" />
+ </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

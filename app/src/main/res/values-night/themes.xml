@@ -10,13 +10,18 @@
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/white</item>
 
+        <item name="android:textColorPrimaryInverse">#3C3B3B</item>
 
-
-        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:statusBarColor">#535252</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
 
     </style>
+
+        <!-- Other theme attributes -->
+        <!-- Change status bar text color -->
+
+
     <style name="CustomAlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowIsFloating">true</item>
     </style>

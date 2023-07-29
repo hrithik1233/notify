@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent">
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+  android:backgroundTint="@color/white"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="5dp">
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:text="Restrict any other devices to login with this account"
+            android:layout_margin="5dp"
+            android:textSize="20sp"
+            android:fontFamily="@font/allerta"
+            android:textColor="@color/Text_colour_grey"/>
+
+
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:backgroundTint="@color/white"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="5dp">
+    <Switch
+        android:layout_margin="5dp"
+        android:id="@+id/single_mode_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Secure mode"/>
+    </androidx.cardview.widget.CardView>
+
+
+</LinearLayout>

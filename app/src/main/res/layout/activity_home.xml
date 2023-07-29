@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     android:background="#ffffff"
     tools:context=".Home">
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:layout_width="match_parent"
+    android:id="@+id/refreshlayout"
+    android:layout_height="match_parent">
+
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -14,16 +19,19 @@
         android:clickable="true"
         android:orientation="vertical"
         android:focusable="true">
-        <RelativeLayout
+        <LinearLayout
             android:background="@color/purple_700"
             android:layout_width="match_parent"
-            android:layout_height="60dp">
+            android:orientation="horizontal"
+
+            android:layout_height="80dp">
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/animation_view"
                 android:layout_width="35dp"
                 android:layout_marginStart="10dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
                 android:onClick="MenuBarClick"
                android:scaleY="1.9"
 
@@ -32,7 +40,7 @@
             <ImageView
                 android:layout_height="10dp"
                 android:layout_width="10dp"
-                android:layout_alignEnd="@+id/animation_view"
+
                 android:id="@+id/notificationHighlightHome"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"
@@ -42,14 +50,16 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:textColor="@color/white"
-                android:layout_centerVertical="true"
                 android:textSize="20sp"
-                android:layout_marginStart="10dp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="5dp"
+                android:layout_marginBottom="6dp"
+
                 android:text="@string/notify"
-                android:layout_toEndOf="@id/animation_view"
+
                 />
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -59,6 +69,7 @@
 
 
     </LinearLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="60dp"
             android:layout_height="60dp"

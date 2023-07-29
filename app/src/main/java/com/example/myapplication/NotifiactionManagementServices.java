@@ -1,19 +1,10 @@
 package com.example.myapplication;
-
-import android.annotation.SuppressLint;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.widget.ImageView;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
 import com.google.firebase.messaging.RemoteMessage;
-
 import java.util.Objects;
 
 public class NotifiactionManagementServices {

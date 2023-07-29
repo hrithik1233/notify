@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="30px"
+    android:layout_height="match_parent">
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:backgroundTint="@color/white"
+        android:layout_margin="5dp"
+        android:elevation="5dp"
+        android:outlineAmbientShadowColor="@color/black"
+        app:cardCornerRadius="5dp"
+        android:padding="20dp"
+        android:layout_height="wrap_content">
+    <TextView
+        android:fontFamily="@font/allerta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="OFFLINE MODE\n\nData saved only locally"
+        android:textColor="@color/Text_colour_grey"
+
+        android:textSize="18dp"/>
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:backgroundTint="@color/white"
+        android:layout_margin="5dp"
+        android:elevation="5dp"
+
+        android:outlineAmbientShadowColor="@color/black"
+        app:cardCornerRadius="5dp"
+        android:padding="20dp"
+        android:layout_height="wrap_content">
+    <TextView
+     android:layout_marginTop="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="Current Mode:"
+        android:textColor="@color/Text_colour_grey"
+        android:id="@+id/offline_current_mode"
+        android:textSize="20dp"/>
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:elevation="5dp"
+        android:backgroundTint="@color/white"
+        android:outlineAmbientShadowColor="@color/black"
+        app:cardCornerRadius="5dp"
+        android:layout_margin="5dp"
+        android:padding="20dp"
+        android:layout_height="wrap_content">
+    <Switch
+        android:textColor="@color/Text_colour_grey"
+       android:layout_marginTop="10dp"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="set offline"
+        android:id="@+id/offline_mode_switch"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </androidx.cardview.widget.CardView>
+
+
+</LinearLayout>

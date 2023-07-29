@@ -47,6 +47,9 @@ public class StudentsDatabase extends SQLiteOpenHelper {
 
     }
     public void createtabel(String TABLE_NAME){
+        try{
+
+
         SQLiteDatabase db=this.getWritableDatabase();
         String table="create table if not exists "+TABLE_NAME+" ( "+STUDENT_ID+" integer primary key autoincrement,"
                 +STUDENT_NAME+" TEXT not null,"+STUDENT_AGE+" INTEGER,"
@@ -54,12 +57,18 @@ public class StudentsDatabase extends SQLiteOpenHelper {
                 +STUDENT_MOBILE_NO+" text,"+STUDENT_REGISTER_NO+" text,"
                 +STUDENT_PARENT_NAME+" text,"+STUDENT_PARENT_MOBILE_NO
                 +" text,"+STUDENT_ADDRESS+" text,"+NO_OF_LATE_COMES +" integer,"+STUDENT_AADHAR_NO+" text);";
+        Log.i("test",table);
         db.execSQL(table);
         db.close();
+        }catch (Exception e){
+            Log.i("test1",e.toString());
+        }
     }
     public Boolean insert(String TABLE_NAME,StudentData sd){
-        SQLiteDatabase db=this.getWritableDatabase();
         long res=-1;
+        try{
+        SQLiteDatabase db=this.getWritableDatabase();
+
         try {
         ContentValues cv=new ContentValues();
         cv.put(STUDENT_NAME,sd.getStdnt_name());
@@ -83,16 +92,26 @@ public class StudentsDatabase extends SQLiteOpenHelper {
             Log.i("test",e.toString());
         }
         db.close();
+        }catch (Exception e){
+            Log.i("test1",e.toString());
+        }
         return res!=-1;
+
 
     }
     public Cursor fetch(String TABLE_NAME){
+        Cursor cursor=null;
+        try{
    SQLiteDatabase db=this.getReadableDatabase();
-        Cursor cursor= db.query(TABLE_NAME,new String[]{STUDENT_ID,STUDENT_NAME,STUDENT_GENDER,STUDENT_AGE,STUDENT_DEPARTMENT,
+        cursor= db.query(TABLE_NAME,new String[]{STUDENT_ID,STUDENT_NAME,STUDENT_GENDER,STUDENT_AGE,STUDENT_DEPARTMENT,
                 STUDENT_MOBILE_NO,STUDENT_PARENT_NAME,STUDENT_PARENT_MOBILE_NO,STUDENT_ADDRESS,NO_OF_LATE_COMES,STUDENT_AADHAR_NO,STUDENT_REGISTER_NO},
                 null,null,null,null,NO_OF_LATE_COMES+" DESC");
         Log.i("test","items count in cursor "+cursor.getCount());
+
         db.close();
+        }catch (Exception e){
+            Log.i("test1",e.toString());
+        }
         return cursor;
     }
     @SuppressLint("Range")

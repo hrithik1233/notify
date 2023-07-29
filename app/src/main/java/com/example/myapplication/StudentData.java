@@ -1,6 +1,5 @@
 package com.example.myapplication;
 
-import android.widget.RelativeLayout;
 
 public class StudentData {
     public static Boolean isSelectionMode=false;
@@ -9,7 +8,6 @@ public class StudentData {
     public StudentData() {
 
     }
-
     public  boolean getIsselected(){
         return isSelected;
     }

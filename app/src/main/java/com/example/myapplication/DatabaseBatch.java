@@ -31,7 +31,6 @@ public class DatabaseBatch extends SQLiteOpenHelper {
         long res=-1;
         try{
 
-
         SQLiteDatabase database=this.getWritableDatabase();
         ContentValues cv=new ContentValues();
         cv.put(BATCH_NAME,hf.getBatch());
@@ -70,6 +69,13 @@ public class DatabaseBatch extends SQLiteOpenHelper {
         long res=database.update(TABLE_NAME,cv,BATCH_NAME+"=? AND "+BATCH_YEAR+" =?"
                 ,new String[]{hf.getBatch(),hf.getYear()});
         return res!=-1;
+    }
+    public boolean deleteAll(){
+        SQLiteDatabase database=this.getWritableDatabase();
+        String exe="delete from "+TABLE_NAME;
+        database.execSQL(exe);
+        database.close();
+        return true;
     }
 
 }

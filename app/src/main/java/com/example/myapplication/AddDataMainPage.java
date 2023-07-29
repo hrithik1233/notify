@@ -10,15 +10,20 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -28,12 +33,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -99,6 +106,8 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
     String dataBaseName;
     String RESULT_LINK = "";
     Boolean RESULT_MODE = false;
+    boolean  isOnline=true;
+    SwipeRefreshLayout swipeRefreshLayout;
     EditText search;
     Dialog editDialog;
     String userDatabase = "";
@@ -110,12 +119,18 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         } catch (Exception e) {
             Log.i("test", e.getMessage());
         }
-
+        // ** FOR CHECKING IF THE USER IS SET ONLINE OR OFFLINE MODE
+        SharedPreferences settings = getSharedPreferences("Setting", MODE_PRIVATE);
+        isOnline=!settings.getBoolean("isOfflineMode",false);
+        //****************************************************************
         setContentView(R.layout.activity_add_data_main_page);
+        swipeRefreshLayout = findViewById(R.id.addDatarefreshLayout);
 
         SharedPreferences preferences = getSharedPreferences(APP_LOGIN, MODE_PRIVATE);
         userDatabase = preferences.getString(SignUpActivity.MAIN_DATABASE_NAME, "default");
@@ -173,6 +188,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
         String yr = intent.getStringExtra("batchYear");
         dataBaseName = intent.getStringExtra("TABLE_NAME");
         reference = FirebaseDatabase.getInstance().getReference(userDatabase + "/" + dataBaseName);
+        Log.i("test",dataBaseName);
         db.createtabel(dataBaseName);
         setMultiDeletesetup();
         recyclerView.setHasFixedSize(true);
@@ -181,7 +197,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
         recyclerView.setAdapter(adapter);
         ed1.setText(bt);
         ed2.setText(yr);
-
+        intialiseWithdatabase();
         addStudent.setOnClickListener(view -> {
             Dialog dialog = new Dialog(AddDataMainPage.this);
             dialog.setContentView(R.layout.addstudentdialogbox);
@@ -407,9 +423,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                 //************************************************************
                 Dexter.withContext(AddDataMainPage.this)
                         .withPermissions(
-                                Manifest.permission.SEND_SMS,
-                                Manifest.permission.READ_CONTACTS
-
+                                Manifest.permission.SEND_SMS
                         ).withListener(new MultiplePermissionsListener() {
                             @Override
                             public void onPermissionsChecked(MultiplePermissionsReport report) {/* ... */}
@@ -469,9 +483,11 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                 }
 
                 if (isSMS) {
-                    //**************************************************
-                    //if Sms is selected
+                    for (DataIntentShare data : share) {
+                        sendSms(data.getMessage(), data.getNumber());
 
+                    }
+                    Toast.makeText(this, "sms", Toast.LENGTH_SHORT).show();
                 }
 
             });
@@ -573,8 +589,11 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                 Boolean res = db.delete(dataBaseName, Integer.toString(arrayList.get(pos).getId()));
                 if (res) {
                     String tmp = arrayList.get(pos).getStdnt_name();
-                    reference.child("studentdata").child(arrayList.get(pos).getId() + "").removeValue();
-                    arrayList.remove(pos);
+                    if(isOnline){
+                        reference.child("studentdata").child(arrayList.get(pos).getId() + "").removeValue();
+                    }
+
+                     arrayList.remove(pos);
                     intialise();
 
                     Toast.makeText(AddDataMainPage.this, tmp + " deleted", Toast.LENGTH_SHORT).show();
@@ -663,7 +682,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                             arrayList.get(pos).getNumber_of_late_comes(), aadhar.getText().toString(), regno.getText().toString());
 
                     Boolean res = db.update(dataBaseName, data);
-                    if (res) {
+                    if (res&&isOnline) {
                         dialog.dismiss();
                         reference.child("studentdata").child(arrayList.get(pos).getId() + "").setValue(data);
                         intialise();
@@ -727,11 +746,8 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
             arrayList.clear();
 
             arrayList.size();
-            if (NetworkUtils.isInternetIsConnected(this)) {
-                intialiseWithdatabase();
-            } else {
                 localDatabaseFetch();
-            }
+
 
 
             if (selected.size() == 0) {
@@ -749,51 +765,54 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
 
     private void intialiseWithdatabase() {
 
-        try {
-            if (!NetworkUtils.isInternetIsConnected(this)) {
-                throw new Exception("offline unable to connect");
-            } else {
-                Toast.makeText(this, "checking database", Toast.LENGTH_SHORT).show();
-                DatabaseReference firebase = FirebaseDatabase.getInstance().getReference(userDatabase + "/" + dataBaseName + "/" + "studentdata");
-                ProgressDialog progressDialog = new ProgressDialog(this);
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-                new Handler().postDelayed(() -> runOnUiThread(progressDialog::dismiss), 1000);
-                firebase.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Log.i("dubugg", "count is " + snapshot.getChildrenCount());
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            try {
+                if(!isOnline) throw  new Exception("offline mode");
+                if (!NetworkUtils.isInternetIsConnected(AddDataMainPage.this)) {
+                    throw new Exception("offline unable to connect");
+                } else {
+                    Toast.makeText(AddDataMainPage.this, "checking database", Toast.LENGTH_SHORT).show();
+                    DatabaseReference firebase = FirebaseDatabase.getInstance().getReference(userDatabase + "/" + dataBaseName + "/" + "studentdata");
 
-                        arrayList.clear();
-                        for (DataSnapshot data : snapshot.getChildren()) {
-                            StudentData dt = data.getValue(StudentData.class);
-                            if (dt != null) {
-                                arrayList.add(dt);
-                                db.insert(dataBaseName, dt);
+
+                    firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Log.i("dubugg", "count is " + snapshot.getChildrenCount());
+
+                            arrayList.clear();
+                            for (DataSnapshot data : snapshot.getChildren()) {
+                                StudentData dt = data.getValue(StudentData.class);
+                                if (dt != null) {
+                                    arrayList.add(dt);
+                                    db.insert(dataBaseName, dt);
+                                }
                             }
+
+
+                            adapter.notifyDataSetChanged();
+                            numberOfStudentsTextView.setText("No of std : " + arrayList.size());
                         }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            arrayList.clear();
+                            localDatabaseFetch();
+                        }
+                    });
 
-                        adapter.notifyDataSetChanged();
-                        numberOfStudentsTextView.setText("No of std : " + arrayList.size());
-                        runOnUiThread(progressDialog::dismiss);
-                    }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        runOnUiThread(progressDialog::dismiss);
 
-                        arrayList.clear();
-                        localDatabaseFetch();
-                    }
-                });
-
+            } catch (Exception e) {
             }
+            new Handler().postDelayed(() -> {
+                swipeRefreshLayout.setRefreshing(false);
+            }, 800);
+        });
 
 
-        } catch (Exception e) {
-        }
     }
 
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
@@ -830,7 +849,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                     .setPositiveButton("yes", (dialogInterface, i) -> {
                         for (int j = 0; j < selected.size(); j++) {
                             boolean res = db.delete(dataBaseName, Integer.toString(selected.get(j).getId()));
-                            if (res) {
+                            if (res&&isOnline) {
                                 reference.child("studentdata").child(Integer.toString(selected.get(j).getId())).
                                         removeValue();
 
@@ -848,7 +867,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     public void uploadToFireBase(View v) {
-        if (arrayList.size() != 0) {
+        if (arrayList.size() != 0&&isOnline) {
 
             Dialog upload = new Dialog(AddDataMainPage.this);
             upload.setContentView(R.layout.upload_stdnt_batch);
@@ -935,15 +954,18 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
             });
             cancel.setOnClickListener(view -> upload.dismiss());
             upload.show();
-        } else {
+        } else if(arrayList.size()==0){
             Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(this, "offline mode", Toast.LENGTH_SHORT).show();
+
         }
     }
 
     public void downloadFromFireBase(View v) {
         if (!NetworkUtils.isInternetIsConnected(this)) {
             Toast.makeText(this, "check network", Toast.LENGTH_SHORT).show();
-        } else {
+        } else if(isOnline){
             Dialog download = new Dialog(this);
             ProgressDialog reqDialog = new ProgressDialog(this);
             download.setContentView(R.layout.request_batch_add_dialog);
@@ -977,13 +999,18 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                         for (DataSnapshot data : snapshot.getChildren()) {
                             if (data.child(batchofowner.toUpperCase()).child("batchPin").exists()) {
                                 String token = (String) data.child("Userdata-1").child("token").getValue();
+                                String ownerName="owner";
+                                ownerName= (String) data.child("Userdata-1").child("name").getValue();
 
-                                BatchPinConfigure bt = data.child(batchofowner.toUpperCase()).child("batchPin").getValue(BatchPinConfigure.class);
+                                 BatchPinConfigure bt = data.child(batchofowner.toUpperCase()).child("batchPin").getValue(BatchPinConfigure.class);
                                 if (bt != null && bt.getName().equalsIgnoreCase(confi.getName()) && bt.getPin().equals(confi.getPin()) && bt.isIsaccessible()) {
                                     MessagesReceiver message = new MessagesReceiver(id, new DateAndTime(), name, email, dataBaseName,
                                             confi, databaseMain, batchofowner);
+                                    message.receiverToken=token;
+                                    message.setOwnerName(ownerName);
+                                    SharedPreferences preferences=getSharedPreferences("token",MODE_PRIVATE);
+                                    message.setRequesterToken(preferences.getString("mytoken","null"));
                                     sendNotifiaction(token, message);
-
                                     data.getRef().child("messageRecieved").child(message.getMessageId() + "").setValue(message).addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {
                                             Toast.makeText(AddDataMainPage.this, "Request send successfully", Toast.LENGTH_SHORT).show();
@@ -1010,6 +1037,8 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
                 });
 
             });
+        }else{
+            Toast.makeText(this, "offline mode", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1056,15 +1085,23 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
 
     @Override
     public void onDestroy() {
-        SharedPreferences pref = getSharedPreferences("applogin", MODE_PRIVATE);
-        String databaseMain = pref.getString(SignUpActivity.MAIN_DATABASE_NAME, "default");
-        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference(databaseMain).child(dataBaseName);
-        firebase.child("batchdata").child("NoOfStudents").setValue(Integer.toString(arrayList.size()));
-        for (int i = 0; i < arrayList.size(); i++) {
-            arrayList.get(i).setIsselected(false);
-            firebase.child("studentdata").child(arrayList.get(i).getId() + "").setValue(arrayList.get(i));
+        if(isOnline) {
+            SharedPreferences pref = getSharedPreferences("applogin", MODE_PRIVATE);
+            String databaseMain = pref.getString(SignUpActivity.MAIN_DATABASE_NAME, "default");
+            DatabaseReference firebase = FirebaseDatabase.getInstance().getReference(databaseMain).child(dataBaseName);
+            Intent intent = getIntent();
+            String bt = intent.getStringExtra("batch_name");
+            String yr = intent.getStringExtra("batchYear");
+            Homefiles hm=new Homefiles(bt,yr,bt.toUpperCase(),Integer.toString(arrayList.size()));
+            firebase.child("batchdata"). setValue(hm);
+
+
+            for (int i = 0; i < arrayList.size(); i++) {
+                arrayList.get(i).setIsselected(false);
+                firebase.child("studentdata").child(arrayList.get(i).getId() + "").setValue(arrayList.get(i));
+            }
+            db.close();
         }
-        db.close();
         super.onDestroy();
     }
 
@@ -1072,6 +1109,7 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
     public void senWhtsappMessage() {
         if (!Settings.canDrawOverlays(AddDataMainPage.this)) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+
 
             activityResultLauncher.launch(intent);
         } else {
@@ -1088,12 +1126,12 @@ public class AddDataMainPage extends AppCompatActivity implements StudentRespons
 
     private void sendSms(String message, String number) {
         SmsManager smsManager = SmsManager.getDefault();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            smsManager.sendTextMessage(number,
-                    null, message, null, null, 0);
-        } else {
-            smsManager.sendTextMessage(number, null, message, null, null);
-        }
+
+        // Divide the message into parts if it exceeds the maximum length
+        ArrayList<String> parts = smsManager.divideMessage(message);
+
+        // Send the SMS
+        smsManager.sendMultipartTextMessage(number, null, parts, null, null);
     }
 
 

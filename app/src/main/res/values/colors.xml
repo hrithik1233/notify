@@ -18,6 +18,7 @@
     <color name="noteColour">#323131</color>
     <color name="Text_colour_grey">#2B2B2B</color>
     <color name="button_gb_blue">#3AA9F4</color>
+    <color name="touch_color">#E6E6E6</color>
 
 
 </resources>
